@@ -1,0 +1,48 @@
+{
+  "wallet": {
+    "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+    "votingCredits": 13
+  },
+  "candidates": [
+    {
+      "id": 1,
+      "name": "Candidate A",
+      "votes": 2
+    },
+    {
+      "id": 2,
+      "name": "Candidate B",
+      "votes": 2
+    },
+    {
+      "id": 3,
+      "name": "Candidate C",
+      "votes": 2
+    },
+    {
+      "id": 4,
+      "name": "Candidate D",
+      "votes": 2
+    }
+  ],
+  "transactions": [
+    {
+      "hash": "0xf986b7c8",
+      "type": "VOTE_CAST",
+      "detail": "Voted for Candidate D",
+      "time": "10:58:16 pm"
+    },
+    {
+      "hash": "0xdceb250c",
+      "type": "VOTE_CAST",
+      "detail": "Voted for Candidate D",
+      "time": "10:58:28 pm"
+    },
+    {
+      "hash": "0xab9faa5b",
+      "type": "VOTE_CAST",
+      "detail": "Voted for Candidate C",
+      "time": "10:58:32 pm"
+    }
+  ]
+}
