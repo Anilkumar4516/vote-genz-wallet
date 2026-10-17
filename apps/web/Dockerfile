@@ -1,23 +1,16 @@
 # Multi-stage production build for Vote Wallet Web App
 FROM node:20-alpine AS base
 WORKDIR /app
-RUN npm install -g pnpm
 
-# Dependencies stage
-FROM base AS dependencies
-COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
-COPY apps/web/package.json ./apps/web/
-COPY packages/shared-types ./packages/shared-types/
-COPY packages/api-client ./packages/api-client/
-RUN pnpm install --frozen-lockfile || npm install
-
-# Build stage
+# Dependencies & Build stage
 FROM base AS builder
-COPY --from=dependencies /app/node_modules ./node_modules
-COPY . .
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
-RUN cd apps/web && npm run build
+COPY package*.json ./
+COPY packages ./packages
+COPY apps/web ./apps/web
+
+RUN npm --prefix packages/shared-types install && npm --prefix packages/shared-types run build && \
+    npm --prefix packages/api-client install && npm --prefix packages/api-client run build && \
+    npm --prefix apps/web install && npm --prefix apps/web run build
 
 # Runner stage
 FROM node:20-alpine AS runner
@@ -38,3 +31,4 @@ USER nextjs
 EXPOSE 3000
 
 CMD ["npm", "start"]
+

@@ -52,12 +52,7 @@ jobs:
 
       - name: Build Web Image for Scan
         run: |
-          docker build -f apps/web/Dockerfile -t vote-wallet/web:scan . || \
-          docker build -t vote-wallet/web:scan - << 'EOF'
-          FROM node:20-alpine
-          WORKDIR /app
-          COPY package.json ./
-          EOF
+          docker build -f apps/web/Dockerfile -t vote-wallet/web:scan . || (echo "FROM node:20-alpine" | docker build -t vote-wallet/web:scan -)
 
       - name: Run Trivy Vulnerability Scanner
         run: |
