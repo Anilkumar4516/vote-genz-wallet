@@ -11,7 +11,7 @@ on:
     paths:
       - 'apps/**'
       - 'packages/**'
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test-web-and-admin:
@@ -27,7 +27,13 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm --prefix packages/shared-types install
+          npm --prefix packages/api-client install
+          npm --prefix packages/audit-client install
+          npm --prefix apps/web install
+          npm --prefix apps/admin install
 
       - name: Build Packages
         run: |

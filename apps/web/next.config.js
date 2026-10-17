@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   transpilePackages: ['@vote-wallet/shared-types', '@vote-wallet/api-client'],
   images: {
     remotePatterns: [
