@@ -4,6 +4,15 @@ A bank-grade, high-throughput voting platform and cryptographic Merkle audit led
 
 ---
 
+## 🌐 Live Application Portals & Local Access
+
+| Application Portal | Local URL | Target Audience & Features |
+| :--- | :--- | :--- |
+| **Citizen Voter Web Portal** | [http://localhost:3000](http://localhost:3000/) | Secure citizen voter portal with biometric verification, OTP authentication, anonymous encrypted ballot casting, and Merkle inclusion proof receipt checking |
+| **Election Commission Admin Console** | [http://localhost:3004](http://localhost:3004/) | Mission-control administrative console for election officials: real-time turnout count, voter roll enrollment, candidate management, key ceremony approvals, and audit ledger inspection |
+
+---
+
 ## ✨ Production Architectural Highlights
 
 - **⚡ High-Throughput Asynchronous Vote Ingestion:** Powered by **Redis Streams** (`XADD` / `XREADGROUP`), decoupling incoming ballot surges ($1,000+\text{ TPS}$) from database writes with atomic token burn.
@@ -91,13 +100,22 @@ Install dependencies across all workspaces (`apps/*`, `services/*`, `packages/*`
 pnpm install
 ```
 
-### 3. Run Development Servers (Turborepo)
-Launch all applications and microservices in watch mode:
+### 3. Run Development Servers & Access Portals
+Launch applications and services locally:
 ```bash
+# Option A: Launch Web Voter App & Backend API (Port 3000)
+npm run dev
+
+# Option B: Launch Admin Dashboard (Port 3004)
+npm run dev:admin
+
+# Option C: Launch everything with Turborepo
 pnpm run dev
-# or via Turborepo:
-pnpm exec turbo dev
 ```
+
+Once running, access the portals in your browser:
+- 🗳️ **Citizen Voter Web Portal:** [http://localhost:3000](http://localhost:3000/)
+- 🏛️ **Election Commission Admin Console:** [http://localhost:3004](http://localhost:3004/)
 
 ### 4. Full Production Stack with Docker Compose
 To launch the complete enterprise architecture (PostgreSQL dual databases, Redis 7, Nginx Gateway, and Microservices):
