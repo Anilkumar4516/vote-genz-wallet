@@ -1,0 +1,291 @@
+openapi: 3.0.3
+info:
+  title: Vote Wallet National Digital Electoral Platform API
+  description: >
+    Official OpenAPI contract between Vote Wallet backend microservices and client
+    frontends (Citizen Web, Admin Console, and Citizen Mobile Wallet).
+    Implements Zero-Knowledge decoupling of citizen identity from cast ballots.
+  version: 2.0.0
+  contact:
+    name: Election Commission Architecture Division
+    email: security@vote.gov.in
+
+servers:
+  - url: https://vote.gov.in/api
+    description: Production Citizen Gateway
+  - url: https://admin.vote.gov.in/api
+    description: Election Commission & Auditor Gateway
+  - url: http://localhost:3000/api
+    description: Local Development Ingress
+
+tags:
+  - name: Authentication
+    description: Voter identification, 2FA OTP generation and session verification
+  - name: Biometrics
+    description: Liveness challenges, facial matchers, and hardware enclave challenge signing
+  - name: Voting
+    description: Zero-knowledge anonymous vote token issuance and sealed ballot casting
+  - name: Administration
+    description: Voter registry management, election scheduling, and key ceremonies
+  - name: Audit
+    description: Public bulletin board, Merkle proofs, and hash-chain verification
+
+paths:
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Request voter OTP
+      description: Initiates voter session by looking up EPIC / National ID in Voter Registry.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nationalId]
+              properties:
+                nationalId:
+                  type: string
+                  example: "EPIC987654321"
+                phoneNumber:
+                  type: string
+                  example: "+919876543210"
+      responses:
+        '200':
+          description: Passcode dispatched to registered mobile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                    example: "sess_7f93a12b4"
+                  phoneMasked:
+                    type: string
+                    example: "•••••••210"
+                  expiresInSeconds:
+                    type: integer
+                    example: 300
+        '400':
+          description: Invalid voter ID format or missing field
+        '429':
+          description: Too many attempts (Rate limit exceeded)
+
+  /auth/verify-otp:
+    post:
+      tags: [Authentication]
+      summary: Verify OTP and issue session token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sessionId, otp]
+              properties:
+                sessionId:
+                  type: string
+                otp:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: OTP verified; returns authenticated bearer JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  expiresIn:
+                    type: integer
+                    example: 900
+        '401':
+          description: Invalid or expired OTP
+
+  /voter/me:
+    get:
+      tags: [Authentication]
+      summary: Retrieve authenticated voter profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Voter identity card data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  nationalId:
+                    type: string
+                  fullName:
+                    type: string
+                  constituencyCode:
+                    type: string
+                  pollingStation:
+                    type: string
+                  hasVoted:
+                    type: boolean
+                  photoUrl:
+                    type: string
+
+  /face/challenge:
+    get:
+      tags: [Biometrics]
+      summary: Request facial liveness challenge
+      responses:
+        '200':
+          description: Random challenge sequence
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  challengeId:
+                    type: string
+                  actions:
+                    type: array
+                    items:
+                      type: string
+                      enum: [blink, turn_left, turn_right, smile]
+                  expiresAt:
+                    type: integer
+
+  /face/verify:
+    post:
+      tags: [Biometrics]
+      summary: Verify facial liveness and biometric match
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [challengeId, image, completedActions]
+              properties:
+                challengeId:
+                  type: string
+                image:
+                  type: string
+                  description: Base64 JPEG captured frame
+                completedActions:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Facial verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verified:
+                    type: boolean
+                  confidence:
+                    type: number
+                    example: 0.992
+
+  /voting/token:
+    post:
+      tags: [Voting]
+      summary: Issue anonymous single-use vote token
+      security:
+        - BearerAuth: []
+      description: Atomically marks voter participation in registry and issues dissociated anonymous token.
+      responses:
+        '200':
+          description: Anonymous token issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  voteToken:
+                    type: string
+                    example: "vtoken_9a8f102c48"
+                  expiresAt:
+                    type: string
+
+  /voting/ballot/cast:
+    post:
+      tags: [Voting]
+      summary: Cast encrypted secret ballot
+      description: Zero-Knowledge ballot submission. Must NOT contain voter ID or name.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [electionId, encryptedVote, voteToken, trackerHash]
+              properties:
+                electionId:
+                  type: string
+                encryptedVote:
+                  type: string
+                  description: Ballot ciphertext encrypted with election public key
+                voteToken:
+                  type: string
+                trackerHash:
+                  type: string
+                  example: "0x8f43b1298c56e39a04bd8e32912a77f98c43912a9bc4821a98e21938ab491204"
+      responses:
+        '201':
+          description: Ballot successfully sealed and recorded on immutable ledger
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ballotId:
+                    type: string
+                  trackerHash:
+                    type: string
+                  merkleRoot:
+                    type: string
+                  merkleIndex:
+                    type: integer
+                  timestamp:
+                    type: string
+
+  /voting/merkle-proof/{trackerHash}:
+    get:
+      tags: [Audit]
+      summary: Public Bulletin Board Merkle inclusion proof
+      parameters:
+        - name: trackerHash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: O(log N) Cryptographic proof of inclusion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verified:
+                    type: boolean
+                  merkleRoot:
+                    type: string
+                  leafIndex:
+                    type: integer
+                  proof:
+                    type: array
+                    items:
+                      type: string
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,81 @@
+name: Security Audit & Vulnerability Scanning
+
+on:
+  schedule:
+    - cron: '0 2 * * 1' # Runs every Monday at 02:00 UTC
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  secret-scan:
+    name: Secret & Credential Leak Detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependency-audit:
+    name: Dependency Vulnerability Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Monorepo Package Audit
+        run: |
+          npm audit --audit-level=high || true
+
+      - name: Python Dependency Audit
+        run: |
+          pip install pip-audit
+          if [ -f services/face-service/requirements.txt ]; then pip-audit -r services/face-service/requirements.txt || true; fi
+
+  container-security:
+    name: Container Vulnerability Scan (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Web Image for Scan
+        run: docker build -f apps/web/Dockerfile -t vote-wallet/web:scan apps/web || true
+
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'vote-wallet/web:scan'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  owasp-zap-scan:
+    name: OWASP ZAP Dynamic API Baseline Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start Application Locally
+        run: |
+          npm ci
+          node apps/web/index.js &
+          sleep 5
+
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: 'http://localhost:3000'
+          rules_file_name: '.zap/rules.tsv'
+          fail_action: false

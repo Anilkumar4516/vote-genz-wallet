@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vote_backend_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vote_wallet
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_secure_pass
+    command: >
+      postgres
+      -c shared_buffers=512MB
+      -c max_connections=300
+      -c work_mem=16MB
+      -c synchronous_commit=off
+    ports:
+      - "5432:5432"
+    volumes:
+      - backend_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vote_wallet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: vote_backend_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy noeviction
+    ports:
+      - "6379:6379"
+    volumes:
+      - backend_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vote_backend_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENV=production
+      - DATABASE_URL=postgresql+psycopg2://postgres:postgres_secure_pass@postgres:5432/vote_wallet
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SECRET_KEY=production-secret-key-32-character-minimum-len
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vote_backend_worker
+    restart: unless-stopped
+    command: ["python", "cmd/worker/worker.py"]
+    environment:
+      - ENV=production
+      - DATABASE_URL=postgresql+psycopg2://postgres:postgres_secure_pass@postgres:5432/vote_wallet
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  backend_pgdata:
+  backend_redisdata:

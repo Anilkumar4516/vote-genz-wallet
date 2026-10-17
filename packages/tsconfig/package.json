@@ -1,0 +1,10 @@
+{
+  "name": "@vote-wallet/tsconfig",
+  "version": "1.0.0",
+  "description": "Shared TypeScript configurations for Vote Wallet microservices, packages, and web applications",
+  "files": [
+    "base.json",
+    "nest.json",
+    "react.json"
+  ]
+}

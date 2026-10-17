@@ -1,5 +1,39 @@
 {
+  "name": "vote-genz-wallet",
+  "version": "2.0.0",
+  "description": "Production-grade, scalable voting wallet and cryptographic Merkle audit ledger application",
+  "main": "apps/web/index.js",
+  "scripts": {
+    "start": "node apps/web/index.js",
+    "dev": "node --watch apps/web/index.js",
+    "dev:web": "npm --prefix apps/web run dev",
+    "dev:admin": "npm --prefix apps/admin run dev",
+    "build:packages": "npm --prefix packages/shared-types run build && npm --prefix packages/audit-client run build && npm --prefix packages/api-client run build",
+    "build:apps": "npm --prefix apps/web run build && npm --prefix apps/admin run build",
+    "worker": "node services/worker.js",
+    "test": "node test/concurrency-and-merkle.test.js && node test/e2e-voting-lifecycle.test.js",
+    "migrate:pg": "node db/migrate-sqlite-to-pg.js",
+    "docker:up": "docker compose -f docker-compose.yml up --build -d",
+    "docker:down": "docker compose -f docker-compose.yml down",
+    "docker:logs": "docker compose -f docker-compose.yml logs -f"
+  },
+  "keywords": [
+    "voting",
+    "merkle-tree",
+    "cryptography",
+    "audit-ledger",
+    "redis-streams",
+    "postgresql",
+    "high-scale"
+  ],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
+    "dotenv": "^18.0.8",
+    "drizzle-orm": "^0.45.4",
+    "express": "^5.3.0",
+    "ioredis": "^6.0.0",
+    "pg": "^8.23.1",
     "sqlite3": "^6.0.1"
   }
 }

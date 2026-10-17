@@ -1,0 +1,57 @@
+name: Production Deployment & Kubernetes Rollout
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*.*.*'
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy-cluster:
+    name: Deploy to Production Cluster
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Cloud Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, Tag, and Push Container Images
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -f infra/docker/Dockerfile.auth -t $REGISTRY/vote-auth:$IMAGE_TAG .
+          docker build -f infra/docker/Dockerfile.voting -t $REGISTRY/vote-voting:$IMAGE_TAG .
+          docker push $REGISTRY/vote-auth:$IMAGE_TAG
+          docker push $REGISTRY/vote-voting:$IMAGE_TAG
+
+      - name: Update Kubernetes Manifests
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+      - name: Apply Deployments & Verify Zero-Downtime Rollout
+        run: |
+          kubectl apply -f infra/k8s/namespace.yaml || true
+          kubectl apply -f infra/k8s/services.yaml
+          kubectl apply -f infra/k8s/deployments.yaml
+          kubectl apply -f infra/k8s/ingress.yaml
+          kubectl apply -f infra/k8s/hpa.yaml
+
+          echo "Verifying Rollout Status..."
+          kubectl rollout status deployment/voting-service -n vote-wallet --timeout=180s
+          kubectl rollout status deployment/auth-service -n vote-wallet --timeout=180s

@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # 1. High-Performance PostgreSQL 16 Primary
+  postgres:
+    image: postgres:16-alpine
+    container_name: vote_wallet_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PGDATABASE:-vote_wallet}
+      POSTGRES_USER: ${PGUSER:-postgres}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-postgres_secure_pass}
+    command: >
+      postgres
+      -c shared_buffers=512MB
+      -c max_connections=300
+      -c work_mem=16MB
+      -c wal_buffers=16MB
+      -c checkpoint_completion_target=0.9
+      -c synchronous_commit=off
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-vote_wallet}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis 7 Cluster / Ingestion Broker & Cache
+  redis:
+    image: redis:7-alpine
+    container_name: vote_wallet_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy noeviction
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Vote Wallet Web API & Citizen Portal
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+    container_name: vote_wallet_api
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      DATABASE_URL: postgres://${PGUSER:-postgres}:${PGPASSWORD:-postgres_secure_pass}@postgres:5432/${PGDATABASE:-vote_wallet}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      ELECTION_SECRET: ${ELECTION_SECRET:-production-election-super-secret-key-2026}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # 4. Asynchronous Ballot Ingestion & Merkle Tree Worker
+  worker:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+    container_name: vote_wallet_worker
+    restart: unless-stopped
+    command: ["node", "../../services/worker.js"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${PGUSER:-postgres}:${PGPASSWORD:-postgres_secure_pass}@postgres:5432/${PGDATABASE:-vote_wallet}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      VOTE_STREAM_KEY: election:1:ballot_stream
+      VOTE_CONSUMER_GROUP: voting_workers
+      VOTE_BATCH_SIZE: 100
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

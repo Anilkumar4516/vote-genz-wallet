@@ -1,0 +1,67 @@
+{
+  "title": "Vote Wallet: Security, Cryptography & Audit Ledger",
+  "timezone": "browser",
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Rate Limit Violations (HTTP 429)",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(nginx_http_requests_total{status='429'}[5m]))",
+          "legendFormat": "Blocked Bursts/sec"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Failed OTP / Auth Attempts",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(auth_otp_verification_failures_total[5m]))",
+          "legendFormat": "Failed OTPs"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Facial Liveness Rejections",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(face_liveness_rejection_total[5m]))",
+          "legendFormat": "Liveness Failures"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Merkle Tree Batch Assembly Duration",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "expr": "merkle_tree_assembly_seconds",
+          "legendFormat": "Merkle Root Computation Time"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Audit Log Integrity Check Status",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 6 },
+      "targets": [
+        {
+          "expr": "audit_hash_chain_valid",
+          "legendFormat": "1 = Valid, 0 = Tampered"
+        }
+      ]
+    }
+  ]
+}

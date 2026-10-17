@@ -1,0 +1,39 @@
+# ====================================================================
+# Multi-Stage Dockerfile: Voting Microservice (NestJS)
+# ====================================================================
+
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+COPY packages ./packages
+COPY services/voting-service ./services/voting-service
+
+RUN npm install -g pnpm && \
+    npm --prefix packages/shared-types install && npm --prefix packages/shared-types run build && \
+    npm --prefix packages/audit-client install && npm --prefix packages/audit-client run build && \
+    npm --prefix services/voting-service install && npm --prefix services/voting-service run build
+
+# Stage 2: Production Runner
+FROM node:20-alpine AS runner
+
+WORKDIR /usr/src/app
+
+ENV NODE_ENV=production
+ENV PORT=3002
+
+USER node
+
+COPY --chown=node:node --from=builder /usr/src/app/services/voting-service/dist ./dist
+COPY --chown=node:node --from=builder /usr/src/app/services/voting-service/node_modules ./node_modules
+COPY --chown=node:node --from=builder /usr/src/app/packages ./packages
+COPY --chown=node:node --from=builder /usr/src/app/services/voting-service/package.json ./package.json
+
+EXPOSE 3002
+
+HEALTHCHECK --interval=15s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3002/health || exit 1
+
+CMD ["node", "dist/main.js"]

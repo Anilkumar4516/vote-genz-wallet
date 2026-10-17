@@ -1,27 +1,47 @@
 # Dependencies
 node_modules/
-*/node_modules/
+.pnp
+.pnp.js
 
-# Database files
+# Testing & Coverage
+coverage/
+.nyc_output
+
+# Next.js & Turborepo builds
+.next/
+out/
+build/
+dist/
+.turbo/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# SQLite runtime DBs & logs
 db/*.sqlite
 db/*.sqlite-journal
-*.sqlite
-*.sqlite3
-
-# Logs
-logs
+db/*.db
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# Editor & OS files
-.vscode/
-.idea/
+# OS metadata & IDEs
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Mobile builds
+apps/mobile/.dart_tool/
+apps/mobile/build/
+apps/mobile/.flutter-plugins
+apps/mobile/.flutter-plugins-dependencies

@@ -1,0 +1,17 @@
+{
+  "name": "@vote-wallet/eslint-config",
+  "version": "1.0.0",
+  "description": "Shared ESLint configurations for Vote Wallet services, packages, and web apps",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "nest.js",
+    "react.js"
+  ],
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}

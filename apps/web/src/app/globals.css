@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 48 100% 97%;
+    --foreground: 222 47% 11%;
+  }
+
+  body {
+    background: #fffdf0;
+    background-image: linear-gradient(180deg, #fffbeb 0%, #ffffff 50%, #fefce8 100%);
+    color: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+/* Glassmorphism Surface Styles - Yellow & White Theme */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #fef08a;
+  box-shadow: 0 4px 20px -2px rgba(234, 179, 8, 0.1);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fefce8 100%);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid #fef08a;
+  box-shadow: 0 8px 30px 0 rgba(202, 138, 4, 0.08);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: #eab308;
+  box-shadow: 0 12px 35px -5px rgba(234, 179, 8, 0.2);
+}
+
+.glass-input {
+  background: #ffffff;
+  border: 1.5px solid #fde047;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: #ca8a04;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+  outline: none;
+}
+
+/* Radar scanline animation for facial liveness capture */
+@keyframes radar-scan {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0.2;
+  }
+}
+
+.animate-radar {
+  animation: radar-scan 2.2s ease-in-out infinite alternate;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #fffdf0;
+}
+::-webkit-scrollbar-thumb {
+  background: #fde047;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #eab308;
+}

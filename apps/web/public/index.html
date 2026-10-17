@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vote Wallet — Official Citizen Digital Voting Portal & Merkle Ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Warm sunny Yellow & White Theme */
+      --bg: #fffdf0;
+      --bg-gradient: linear-gradient(180deg, #fffbeb 0%, #ffffff 50%, #fefce8 100%);
+      --surface: #ffffff;
+      --surface-light: #fefce8;
+      --surface-border: #fef08a;
+      --surface-border-strong: #fde047;
+      --yellow: #eab308;
+      --yellow-bright: #facc15;
+      --yellow-dark: #ca8a04;
+      --yellow-glow: rgba(234, 179, 8, 0.35);
+      --emerald: #16a34a;
+      --emerald-light: #f0fdf4;
+      --rose: #e11d48;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --shadow-warm: 0 10px 30px -5px rgba(202, 138, 4, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      background-image: var(--bg-gradient);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    /* Ambient warm yellow & white glow */
+    .glow-mesh {
+      position: fixed;
+      top: -15%;
+      left: 15%;
+      width: 70vw;
+      height: 70vw;
+      background: radial-gradient(circle, rgba(254, 240, 138, 0.45) 0%, rgba(254, 252, 232, 0.5) 40%, transparent 70%);
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom: 2px solid var(--surface-border-strong);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 16px rgba(234, 179, 8, 0.08);
+    }
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #facc15, #eab308);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 14px var(--yellow-glow);
+      border: 1px solid #fef08a;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: #fefce8;
+      border: 1.5px solid var(--yellow-bright);
+      color: var(--yellow-dark);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 0 8px var(--yellow);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+    .journey-bar {
+      display: flex;
+      justify-content: space-between;
+      background: #ffffff;
+      border: 1.5px solid var(--surface-border);
+      border-radius: 18px;
+      padding: 16px 24px;
+      margin-bottom: 32px;
+      gap: 8px;
+      box-shadow: var(--shadow-warm);
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0.55;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.3s;
+    }
+    .step-item.active {
+      opacity: 1;
+      font-weight: 800;
+      color: var(--yellow-dark);
+    }
+    .step-item.completed {
+      opacity: 1;
+      color: var(--emerald);
+    }
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #fefce8;
+      border: 1.5px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+    .step-item.active .step-num {
+      background: linear-gradient(135deg, #facc15, #eab308);
+      color: #0f172a;
+      border-color: #ca8a04;
+      box-shadow: 0 0 12px var(--yellow-glow);
+    }
+    .step-item.completed .step-num {
+      background: var(--emerald);
+      color: #ffffff;
+      border-color: var(--emerald);
+    }
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .grid-layout { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--surface);
+      border: 1.5px solid var(--surface-border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow-warm);
+    }
+    h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; color: var(--text); }
+    p.subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+    input {
+      width: 100%;
+      background: #ffffff;
+      border: 1.5px solid var(--surface-border-strong);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.2s;
+    }
+    input:focus {
+      border-color: var(--yellow-dark);
+      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #facc15, #eab308);
+      color: #0f172a;
+      border: 1px solid #ca8a04;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px var(--yellow-glow);
+    }
+    .btn:hover {
+      background: linear-gradient(135deg, #eab308, #ca8a04);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-secondary {
+      background: #fefce8;
+      border: 1.5px solid var(--surface-border);
+      box-shadow: none;
+      color: var(--yellow-dark);
+      font-weight: 700;
+    }
+    .btn-secondary:hover { background: #fef08a; color: #713f12; }
+    .quick-voters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .voter-chip {
+      background: #fefce8;
+      border: 1px solid var(--surface-border-strong);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--yellow-dark);
+      transition: all 0.2s;
+    }
+    .voter-chip:hover {
+      background: #fef08a;
+      color: #713f12;
+      border-color: var(--yellow);
+    }
+    .candidate-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1.5px solid var(--surface-border);
+      background: #ffffff;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .candidate-card:hover, .candidate-card.selected {
+      border-color: var(--yellow-dark);
+      background: #fefce8;
+      box-shadow: 0 4px 16px rgba(234, 179, 8, 0.15);
+    }
+    .symbol-box {
+      font-size: 28px;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fffdf0;
+      border-radius: 12px;
+      border: 1.5px solid var(--surface-border);
+    }
+    .receipt-box {
+      background: #fffdf0;
+      border: 2px dashed var(--yellow-dark);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 16px;
+      box-shadow: inset 0 2px 6px rgba(234, 179, 8, 0.05);
+    }
+    .hash-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: #ffffff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--yellow-dark);
+      font-weight: 600;
+      word-break: break-all;
+      margin: 8px 0;
+      border: 1px solid var(--surface-border-strong);
+    }
+    .live-feed {
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+    .feed-item {
+      padding: 8px 12px;
+      border-left: 3px solid var(--yellow);
+      background: #fefce8;
+      color: #1e293b;
+      margin-bottom: 8px;
+      border-radius: 0 8px 8px 0;
+      border: 1px solid var(--surface-border);
+      border-left-width: 3px;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="glow-mesh"></div>
+
+  <header>
+    <a href="/" class="logo-badge">
+      <div class="logo-icon">🗳️</div>
+      <div>
+        <div style="font-weight: 900; letter-spacing: 1.5px; font-size: 16px; color: #0f172a;">VOTE WALLET</div>
+        <div style="font-size: 11px; color: var(--text-muted);">Republic Digital Electoral Portal</div>
+      </div>
+    </a>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div class="status-pill">
+        <div class="pulse-dot"></div>
+        LIVE MERKLE LEDGER
+      </div>
+      <button onclick="resetElection()" class="btn btn-secondary" style="width: auto; padding: 6px 14px; font-size: 12px;">Reset Demo</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Five-Step Journey Progress Indicator -->
+    <div class="journey-bar">
+      <div class="step-item active" id="prog-1"><div class="step-num">1</div> Auth</div>
+      <div class="step-item" id="prog-2"><div class="step-num">2</div> Passcode</div>
+      <div class="step-item" id="prog-3"><div class="step-num">3</div> Identity</div>
+      <div class="step-item" id="prog-4"><div class="step-num">4</div> Ballot</div>
+      <div class="step-item" id="prog-5"><div class="step-num">5</div> Receipt</div>
+    </div>
+
+    <div class="grid-layout">
+      <!-- Main Dynamic Workflow Area -->
+      <div>
+        <!-- STEP 1: LOGIN -->
+        <div class="card" id="step-1">
+          <h2>🛡️ National Voter Sign-In</h2>
+          <p class="subtitle">Enter your official Voter ID (EPIC) to begin secure zero-knowledge voting.</p>
+          <div class="form-group">
+            <label>EPIC Voter Code</label>
+            <input type="text" id="voterCode" value="VOTER-SAN8639" placeholder="e.g. VOTER-SAN8639">
+          </div>
+          <button class="btn" onclick="requestOtp()">Send Verification OTP ➔</button>
+          <div style="margin-top: 20px;">
+            <label>QUICK DEMO VOTERS</label>
+            <div class="quick-voters">
+              <span class="voter-chip" onclick="fillVoter('VOTER-SAN8639')">Sandeep (VOTER-SAN8639)</span>
+              <span class="voter-chip" onclick="fillVoter('VOTER-ANI1248')">Anil (VOTER-ANI1248)</span>
+              <span class="voter-chip" onclick="fillVoter('VOTER-DIV9032')">Diva (VOTER-DIV9032)</span>
+              <span class="voter-chip" onclick="fillVoter('VOTER-HAR5170')">Harsh (VOTER-HAR5170)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: OTP VERIFICATION -->
+        <div class="card hidden" id="step-2">
+          <h2>🔑 Enter Two-Factor Passcode</h2>
+          <p class="subtitle">A 6-digit cryptographic verification code has been dispatched to your registered phone.</p>
+          <div class="form-group">
+            <label>6-Digit Passcode</label>
+            <input type="text" id="otpCode" value="123456" maxlength="6" style="letter-spacing: 8px; font-size: 22px; text-align: center; color: #0f172a;">
+          </div>
+          <button class="btn" onclick="verifyOtp()">Verify & Authenticate ➔</button>
+          <button class="btn btn-secondary" onclick="showStep(1)" style="margin-top: 10px;">Back to Sign In</button>
+        </div>
+
+        <!-- STEP 3: CITIZEN IDENTITY & BIOMETRICS -->
+        <div class="card hidden" id="step-3">
+          <h2>👤 Elector Identity & Biometric Auth</h2>
+          <p class="subtitle">Confirm your demographic registration and authorize anonymous token issuance.</p>
+          <div style="background: var(--surface-light); border-radius: 14px; padding: 18px; border: 1.5px solid var(--surface-border); margin-bottom: 20px;">
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #facc15, #eab308); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #0f172a; box-shadow: 0 2px 8px var(--yellow-glow);" id="citizenInitials">SS</div>
+              <div>
+                <div style="font-size: 18px; font-weight: 800; color: var(--text);" id="citizenName">Sandeep Sharma</div>
+                <div style="font-size: 13px; color: var(--yellow-dark); font-family: 'JetBrains Mono'; font-weight: 700;" id="citizenCode">VOTER-SAN8639</div>
+                <div style="font-size: 12px; color: var(--emerald); font-weight: 800; margin-top: 2px;">● ELIGIBLE TO VOTE</div>
+              </div>
+            </div>
+          </div>
+          <div style="background: #fffdf5; border: 1.5px dashed var(--surface-border-strong); border-radius: 12px; padding: 14px; margin-bottom: 20px; font-size: 12px; color: #475569; display: flex; align-items: center; gap: 10px;">
+            <div style="font-size: 22px;">🔒</div>
+            <div>
+              <strong style="color: #713f12;">Zero-Knowledge Separation Guarantee:</strong> Your biometric verification decouples your identity from your vote token. The ballot box has NO record of who you are.
+            </div>
+          </div>
+          <button class="btn" onclick="issueToken()">Authorize Biometric & Issue Ballot Token ➔</button>
+        </div>
+
+        <!-- STEP 4: BALLOT SELECTION -->
+        <div class="card hidden" id="step-4">
+          <h2>🗳️ Official Electronic Ballot</h2>
+          <p class="subtitle">Select one candidate or None of the Above (NOTA). Once cast, your choice is permanently sealed.</p>
+          <div id="candidatesList"></div>
+          <button class="btn" id="castBtn" onclick="castBallot()" disabled style="margin-top: 16px;">Seal & Cast Secret Ballot ➔</button>
+        </div>
+
+        <!-- STEP 5: CRYPTOGRAPHIC RECEIPT -->
+        <div class="card hidden" id="step-5">
+          <h2 style="color: var(--emerald);">✅ Vote Cast & Recorded!</h2>
+          <p class="subtitle">Your anonymous ballot has been cryptographically sealed and committed to the ledger.</p>
+          <div class="receipt-box">
+            <div style="font-size: 40px; margin-bottom: 8px;">🏛️</div>
+            <div style="font-size: 18px; font-weight: 900; color: #0f172a;" id="receiptCode">RCPT-XXXX-XXXX</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">SHA-256 Tracker Receipt Hash</div>
+            <div class="hash-display" id="receiptHash">0x...</div>
+            <div style="font-size: 12px; color: var(--emerald); margin-top: 12px; font-weight: 800;">
+              ✓ Cryptographic Inclusion Proof Generated in Merkle Tree
+            </div>
+          </div>
+          <button class="btn" onclick="verifyProof()" style="margin-top: 20px;">Verify O(log N) Merkle Inclusion Proof ➔</button>
+          <button class="btn btn-secondary" onclick="showStep(1)" style="margin-top: 10px;">Complete & Exit</button>
+        </div>
+      </div>
+
+      <!-- Live Sidebar: Real-Time Merkle Ledger Stream & Turnout -->
+      <div>
+        <div class="card">
+          <h2>⚡ Live Turnout & Ledger</h2>
+          <p class="subtitle">Real-time cryptographic audit trail streamed via Server-Sent Events.</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div style="background: var(--surface-light); padding: 14px; border-radius: 12px; border: 1.5px solid var(--surface-border);">
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted);">TOTAL VOTES</div>
+              <div style="font-size: 26px; font-weight: 900; color: var(--yellow-dark);" id="totalVotesCount">0</div>
+            </div>
+            <div style="background: var(--surface-light); padding: 14px; border-radius: 12px; border: 1.5px solid var(--surface-border);">
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted);">MERKLE NODES</div>
+              <div style="font-size: 26px; font-weight: 900; color: var(--emerald);" id="merkleNodesCount">1,024</div>
+            </div>
+          </div>
+
+          <label style="margin-bottom: 8px;">RECENT AUDIT EVENTS</label>
+          <div class="live-feed" id="auditFeed">
+            <div class="feed-item">
+              <span style="color: var(--yellow-dark); font-weight: 700;">[GENESIS]</span> Platform initialized with SHA-256 Merkle root.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentVoterCode = 'VOTER-SAN8639';
+    let sessionToken = null;
+    let anonymousToken = null;
+    let selectedCandidateId = null;
+    let lastReceiptHash = null;
+
+    function fillVoter(code) {
+      document.getElementById('voterCode').value = code;
+      currentVoterCode = code;
+    }
+
+    function showStep(step) {
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById(`step-${i}`).classList.add('hidden');
+        const prog = document.getElementById(`prog-${i}`);
+        prog.classList.remove('active');
+        if (i < step) prog.classList.add('completed');
+        else prog.classList.remove('completed');
+      }
+      document.getElementById(`step-${step}`).classList.remove('hidden');
+      document.getElementById(`prog-${step}`).classList.add('active');
+    }
+
+    async function requestOtp() {
+      const code = document.getElementById('voterCode').value.trim();
+      currentVoterCode = code;
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ voterCode: code })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          if (data.demoOtp) document.getElementById('otpCode').value = data.demoOtp;
+          showStep(2);
+        } else {
+          alert(data.error || 'Login failed');
+        }
+      } catch (e) {
+        showStep(2);
+      }
+    }
+
+    async function verifyOtp() {
+      const otp = document.getElementById('otpCode').value.trim();
+      try {
+        const res = await fetch('/api/auth/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ voterCode: currentVoterCode, otp })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          sessionToken = data.sessionToken;
+          document.getElementById('citizenName').textContent = data.voter ? data.voter.fullName : 'Verified Citizen';
+          document.getElementById('citizenCode').textContent = currentVoterCode;
+          showStep(3);
+        } else {
+          alert(data.error || 'Invalid passcode');
+        }
+      } catch (e) {
+        sessionToken = 'mock_sess_' + Date.now();
+        showStep(3);
+      }
+    }
+
+    async function issueToken() {
+      try {
+        const res = await fetch('/api/vote/token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionToken}`
+          },
+          body: JSON.stringify({ electionId: 1 })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          anonymousToken = data.anonymousToken;
+          await loadCandidates();
+          showStep(4);
+        } else {
+          alert(data.error || 'Failed to issue token. You may have already voted!');
+        }
+      } catch (e) {
+        anonymousToken = 'anon_tok_' + Date.now();
+        await loadCandidates();
+        showStep(4);
+      }
+    }
+
+    async function loadCandidates() {
+      const res = await fetch('/api/elections/1/candidates');
+      const data = await res.json();
+      const container = document.getElementById('candidatesList');
+      container.innerHTML = '';
+      (data.candidates || []).forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'candidate-card';
+        div.onclick = () => selectCandidate(c.id, div);
+        div.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div class="symbol-box">${c.symbol || '🗳️'}</div>
+            <div>
+              <div style="font-size: 16px; font-weight: 800; color: #0f172a;">${c.name}</div>
+              <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">${c.party}</div>
+            </div>
+          </div>
+          <div style="font-weight: 800; color: var(--yellow-dark);">Select ➔</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function selectCandidate(id, el) {
+      selectedCandidateId = id;
+      document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('castBtn').removeAttribute('disabled');
+    }
+
+    async function castBallot() {
+      if (!selectedCandidateId) return;
+      try {
+        const res = await fetch('/api/vote/cast', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionToken}`
+          },
+          body: JSON.stringify({
+            anonymousToken,
+            candidateId: selectedCandidateId,
+            electionId: 1
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          lastReceiptHash = data.receiptHash;
+          document.getElementById('receiptCode').textContent = data.receiptCode || 'RCPT-CONFIRMED';
+          document.getElementById('receiptHash').textContent = data.receiptHash || '0x...';
+          showStep(5);
+          refreshStats();
+        } else {
+          alert(data.error || 'Failed to cast ballot');
+        }
+      } catch (e) {
+        alert('Cast error: ' + e);
+      }
+    }
+
+    async function verifyProof() {
+      if (!lastReceiptHash) return;
+      const res = await fetch(`/api/vote/merkle-proof/${lastReceiptHash}`);
+      const data = await res.json();
+      if (data.verified) {
+        alert(`🎉 Cryptographic Merkle Inclusion Proof Verified!\n\nRoot: ${data.merkleRoot}\nProof Steps: ${data.proof ? data.proof.length : 0}\nAlgorithm: ${data.complexity}`);
+      } else {
+        alert('Verification note: ' + JSON.stringify(data));
+      }
+    }
+
+    async function refreshStats() {
+      try {
+        const res = await fetch('/api/poll');
+        const data = await res.json();
+        const total = (data.candidates || []).reduce((acc, c) => acc + (c.votes || 0), 0);
+        document.getElementById('totalVotesCount').textContent = total;
+
+        const feed = document.getElementById('auditFeed');
+        if (data.transactions && data.transactions.length > 0) {
+          feed.innerHTML = data.transactions.slice(0, 8).map(tx => `
+            <div class="feed-item">
+              <span style="color: var(--yellow-dark); font-weight: 700;">[${tx.action_type}]</span> ${tx.detail}
+            </div>
+          `).join('');
+        }
+      } catch (_) {}
+    }
+
+    async function resetElection() {
+      if (!confirm('Reset all demo ballots and participation to test again?')) return;
+      await fetch('/api/admin/reset-election', { method: 'POST' });
+      showStep(1);
+      refreshStats();
+    }
+
+    // Initialize real-time polling
+    refreshStats();
+    setInterval(refreshStats, 4000);
+  </script>
+</body>
+</html>

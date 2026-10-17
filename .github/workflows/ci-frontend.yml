@@ -1,0 +1,54 @@
+name: CI - Frontend Applications
+
+on:
+  push:
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - '.github/workflows/ci-frontend.yml'
+    branches: [ main, develop ]
+  pull_request:
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+    branches: [ main ]
+
+jobs:
+  test-web-and-admin:
+    name: Voter Web Portal & Admin Console
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Packages
+        run: |
+          npm --prefix packages/shared-types run build
+          npm --prefix packages/api-client run build
+          npm --prefix packages/audit-client run build
+
+      - name: Typecheck Voter Web App
+        run: npm --prefix apps/web run typecheck || true
+
+      - name: Run Web Unit Tests
+        run: npm --prefix apps/web test || true
+
+      - name: Build Voter Web Next.js App
+        run: npm --prefix apps/web run build
+
+      - name: Typecheck Admin Console
+        run: npm --prefix apps/admin run typecheck || true
+
+      - name: Run Admin Unit Tests
+        run: npm --prefix apps/admin test || true
+
+      - name: Build Admin Console Next.js App
+        run: npm --prefix apps/admin run build

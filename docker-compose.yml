@@ -1,0 +1,152 @@
+version: '3.8'
+
+services:
+  # 🔐 Auth Microservice (NestJS)
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: vote-wallet-auth-service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - VOTER_REGISTRY_DB_HOST=voter-registry-db
+      - VOTER_REGISTRY_DB_PORT=5432
+      - VOTER_REGISTRY_DB_USER=voter_registry_readonly
+      - VOTER_REGISTRY_DB_PASS=secure_ro_password
+      - VOTER_REGISTRY_DB_NAME=vote_wallet_identity
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - voter-registry-db
+      - redis
+    networks:
+      - vote-net
+
+  # 🗳️ Voting Microservice (NestJS)
+  voting-service:
+    build:
+      context: ./services/voting-service
+      dockerfile: Dockerfile
+    container_name: vote-wallet-voting-service
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - VOTER_REGISTRY_DB_HOST=voter-registry-db
+      - VOTER_REGISTRY_DB_PORT=5432
+      - VOTER_REGISTRY_DB_USER=voter_participation_insert_only
+      - VOTER_REGISTRY_DB_PASS=secure_insert_password
+      - VOTER_REGISTRY_DB_NAME=vote_wallet_identity
+      - BALLOT_BOX_DB_HOST=ballot-box-db
+      - BALLOT_BOX_DB_PORT=5432
+      - BALLOT_BOX_DB_USER=ballot_box_user
+      - BALLOT_BOX_DB_PASS=secure_ballot_password
+      - BALLOT_BOX_DB_NAME=vote_wallet_ballot_box
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - BALLOT_ENCRYPTION_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    depends_on:
+      - voter-registry-db
+      - ballot-box-db
+      - redis
+    networks:
+      - vote-net
+
+  # 🛡️ Admin Microservice (NestJS)
+  admin-service:
+    build:
+      context: ./services/admin-service
+      dockerfile: Dockerfile
+    container_name: vote-wallet-admin-service
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - VOTER_REGISTRY_DB_HOST=voter-registry-db
+      - VOTER_REGISTRY_DB_PORT=5432
+      - VOTER_REGISTRY_DB_USER=voter_registry_admin
+      - VOTER_REGISTRY_DB_PASS=secure_admin_password
+      - VOTER_REGISTRY_DB_NAME=vote_wallet_identity
+    depends_on:
+      - voter-registry-db
+    networks:
+      - vote-net
+
+  # 👤 Face Verification Microservice (FastAPI)
+  face-service:
+    build:
+      context: ./services/face-service
+      dockerfile: Dockerfile
+    container_name: vote-wallet-face-service
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - VOTER_REGISTRY_DB_HOST=voter-registry-db
+      - VOTER_REGISTRY_DB_PORT=5432
+      - VOTER_REGISTRY_DB_USER=face_template_readonly
+      - VOTER_REGISTRY_DB_PASS=secure_face_read_password
+      - VOTER_REGISTRY_DB_NAME=vote_wallet_identity
+    depends_on:
+      - voter-registry-db
+    networks:
+      - vote-net
+
+  # 🗄️ Database 1: Voter Identity Registry
+  voter-registry-db:
+    image: postgres:16-alpine
+    container_name: vote-wallet-voter-registry-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vote_wallet_identity
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_master_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_identity_data:/var/lib/postgresql/data
+    networks:
+      - vote-net
+
+  # 📦 Database 2: Encrypted Ballot Box & Merkle Audit Ledger
+  ballot-box-db:
+    image: postgres:16-alpine
+    container_name: vote-wallet-ballot-box-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vote_wallet_ballot_box
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_master_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_ballot_data:/var/lib/postgresql/data
+    networks:
+      - vote-net
+
+  # ⚡ Redis Message Broker & Session Store
+  redis:
+    image: redis:7-alpine
+    container_name: vote-wallet-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vote-net
+
+networks:
+  vote-net:
+    driver: bridge
+
+volumes:
+  pg_identity_data:
+  pg_ballot_data:
+  redis_data:

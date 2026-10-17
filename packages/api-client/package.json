@@ -1,0 +1,23 @@
+{
+  "name": "@vote-wallet/api-client",
+  "version": "1.0.0",
+  "description": "Unified type-safe API client for Vote Wallet web applications and admin portals",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@vote-wallet/shared-types": "file:../shared-types"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

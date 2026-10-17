@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background: #fffdf0;
+    background-image: linear-gradient(180deg, #fffbeb 0%, #ffffff 50%, #fefce8 100%);
+    color: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+  }
+}
+
+/* Admin Glassmorphism Operations Surface - Yellow & White Theme */
+.admin-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid #fef08a;
+  box-shadow: 0 4px 24px -1px rgba(202, 138, 4, 0.08);
+}
+
+.admin-card-header {
+  border-bottom: 1.5px solid #fef08a;
+  padding: 1rem 1.25rem;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.admin-table th {
+  background: #fefce8;
+  padding: 0.75rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #854d0e;
+  border-bottom: 1.5px solid #fde047;
+}
+
+.admin-table td {
+  padding: 0.85rem 1rem;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid #fef08a;
+  color: #1e293b;
+}
+
+.admin-table tr:hover td {
+  background: #fffbeb;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #fffdf0;
+}
+::-webkit-scrollbar-thumb {
+  background: #fde047;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #eab308;
+}

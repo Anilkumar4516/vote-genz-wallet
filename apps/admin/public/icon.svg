@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="adminShield" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="#070b14"/>
+  <path d="M256 64 L416 128 V272 C416 368 256 448 256 448 C256 448 96 368 96 272 V128 Z" fill="none" stroke="url(#adminShield)" stroke-width="24" stroke-linejoin="round"/>
+  <circle cx="256" cy="220" r="45" fill="none" stroke="#6366f1" stroke-width="12"/>
+  <path d="M196 330 C196 280 316 280 316 330" fill="none" stroke="#06b6d4" stroke-width="14" stroke-linecap="round"/>
+</svg>

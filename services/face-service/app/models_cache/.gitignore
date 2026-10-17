@@ -1,0 +1,3 @@
+# Ignore all large model weights, binaries and model checkpoints
+*
+!.gitignore

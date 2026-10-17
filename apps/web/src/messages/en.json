@@ -1,0 +1,106 @@
+{
+  "app": {
+    "title": "Vote Wallet",
+    "subtitle": "National Electoral Commission Digital Voting Portal",
+    "secure": "Cryptographically Sealed & Merkle Audited"
+  },
+  "nav": {
+    "home": "Home",
+    "verifyReceipt": "Check Ballot Receipt",
+    "auditLedger": "Public Audit Ledger",
+    "help": "Voter Support"
+  },
+  "steps": {
+    "login": "Authentication",
+    "identity": "Voter Profile",
+    "verification": "Biometric Verification",
+    "ballot": "Cast Ballot",
+    "receipt": "Cryptographic Receipt"
+  },
+  "login": {
+    "header": "Citizen Authentication",
+    "desc": "Enter your National Voter ID to access your confidential electronic ballot.",
+    "voterIdLabel": "National Voter ID / EPIC Number",
+    "voterIdPlaceholder": "e.g. VOTE987654321",
+    "phoneLabel": "Registered Mobile Number",
+    "phonePlaceholder": "e.g. +91 98765 43210",
+    "submit": "Send One-Time Passcode",
+    "help": "Need help finding your voter ID? Check your electoral photo card or contact your constituency office."
+  },
+  "otp": {
+    "header": "Verify One-Time Passcode",
+    "desc": "A 6-digit secure code was sent to your registered mobile ending in",
+    "codeLabel": "6-Digit Passcode",
+    "verify": "Confirm Passcode",
+    "resend": "Resend Passcode in",
+    "resendNow": "Resend Passcode"
+  },
+  "identity": {
+    "header": "Voter Registration Card",
+    "desc": "Confirm your identity details before entering the confidential voting booth.",
+    "constituency": "Constituency",
+    "pollingStation": "Assigned Polling Station",
+    "status": "Electoral Status",
+    "active": "Eligible to Vote",
+    "alreadyVoted": "Ballot Already Recorded",
+    "proceed": "Proceed to Biometric Verification"
+  },
+  "consent": {
+    "header": "Biometric Verification Consent",
+    "desc": "To ensure one-citizen, one-vote integrity, facial liveness and biometric matching are conducted in volatile RAM memory only.",
+    "bullet1": "Biometric templates are decrypted in volatile memory and never stored on disk.",
+    "bullet2": "Zero-Knowledge isolation separates your citizen identity from your encrypted ballot.",
+    "bullet3": "Post-election statutory purge permanently cleanses all temporary biometric tokens.",
+    "agree": "I Consent & Proceed",
+    "decline": "Decline & Exit"
+  },
+  "face": {
+    "header": "Facial Liveness Verification",
+    "desc": "Align your face in the oval frame and follow the interactive prompts.",
+    "actionBlink": "Blink your eyes now",
+    "actionTurn": "Slightly turn your head",
+    "actionSmile": "Hold steady and smile",
+    "start": "Activate Camera",
+    "verifying": "Analyzing Liveness & Face Embedding...",
+    "passed": "Facial Verification Confirmed",
+    "failed": "Biometric match did not meet confidence threshold. Please retry."
+  },
+  "fingerprint": {
+    "header": "Hardware Security Verification",
+    "desc": "Touch your device's biometric sensor or security key to complete factor 3 authentication.",
+    "prompt": "Touch Fingerprint Sensor",
+    "verifying": "Validating WebAuthn cryptographic signature...",
+    "passed": "Hardware Factor Verified",
+    "failed": "Hardware signature error. Please retry."
+  },
+  "ballot": {
+    "header": "Official Ballot Paper",
+    "desc": "Select one candidate from your constituency slate. Your choice is encrypted with trustee public keys before transmission.",
+    "candidate": "Candidate",
+    "party": "Party",
+    "select": "Select",
+    "selected": "Selected",
+    "continue": "Review Ballot Selection"
+  },
+  "review": {
+    "header": "Confirm Your Vote",
+    "desc": "Please carefully review your selection. Once sealed and cast, ballots cannot be altered or undone.",
+    "chosenCandidate": "Selected Candidate",
+    "electionTitle": "Election",
+    "sealingNotice": "Your ballot will be sealed with AES-256-GCM encryption and recorded in the isolated Ballot Box.",
+    "castButton": "Seal & Cast Ballot Now",
+    "back": "Change Selection"
+  },
+  "receipt": {
+    "header": "Ballot Successfully Cast & Sealed",
+    "desc": "Your vote has been cryptographically recorded in the national ballot box and anchored in the Merkle audit tree.",
+    "codeLabel": "Voter Verification Receipt Code",
+    "merkleRoot": "Merkle Root Hash",
+    "leafHash": "Ballot Leaf Hash",
+    "leafIndex": "Merkle Index",
+    "timestamp": "Timestamp (Rounded)",
+    "download": "Save Receipt PDF",
+    "checkOnline": "Verify on Public Ledger",
+    "finish": "Exit Voting Portal"
+  }
+}

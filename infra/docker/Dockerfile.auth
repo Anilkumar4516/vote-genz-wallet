@@ -1,0 +1,40 @@
+# ====================================================================
+# Multi-Stage Dockerfile: Auth Microservice (NestJS)
+# ====================================================================
+
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+COPY packages ./packages
+COPY services/auth-service ./services/auth-service
+
+# Install dependencies and build shared packages & service
+RUN npm install -g pnpm && \
+    npm --prefix packages/shared-types install && npm --prefix packages/shared-types run build && \
+    npm --prefix packages/audit-client install && npm --prefix packages/audit-client run build && \
+    npm --prefix services/auth-service install && npm --prefix services/auth-service run build
+
+# Stage 2: Production Runner
+FROM node:20-alpine AS runner
+
+WORKDIR /usr/src/app
+
+ENV NODE_ENV=production
+ENV PORT=3001
+
+USER node
+
+COPY --chown=node:node --from=builder /usr/src/app/services/auth-service/dist ./dist
+COPY --chown=node:node --from=builder /usr/src/app/services/auth-service/node_modules ./node_modules
+COPY --chown=node:node --from=builder /usr/src/app/packages ./packages
+COPY --chown=node:node --from=builder /usr/src/app/services/auth-service/package.json ./package.json
+
+EXPOSE 3001
+
+HEALTHCHECK --interval=20s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
+
+CMD ["node", "dist/main.js"]

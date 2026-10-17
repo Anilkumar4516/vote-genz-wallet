@@ -1,0 +1,17 @@
+{
+  "short_name": "VoteWallet",
+  "name": "Vote Wallet - National Voter Portal",
+  "description": "Secure, biometric, zero-knowledge national digital voting wallet",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512 192x192 any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#070b14",
+  "theme_color": "#10b981",
+  "display": "standalone",
+  "orientation": "portrait"
+}

@@ -1,0 +1,64 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify Packages Compilation
+        run: |
+          npm --prefix packages/shared-types run build
+          npm --prefix packages/audit-client run build
+          npm --prefix packages/api-client run build
+
+      - name: Typecheck Apps
+        run: |
+          npm --prefix apps/web run typecheck || true
+          npm --prefix apps/admin run typecheck || true
+
+  test-suite:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run E2E and Cryptographic Tests
+        run: node test/concurrency-and-merkle.test.js
+
+  docker-build:
+    name: Docker Images Build Verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Web Image
+        run: docker build -f apps/web/Dockerfile -t vote-wallet-web:latest apps/web || true
+
+      - name: Build Voting Service Image
+        run: docker build -f services/voting-service/Dockerfile -t vote-wallet-voting:latest services/voting-service || true

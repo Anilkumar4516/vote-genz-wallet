@@ -1,0 +1,46 @@
+name: vote_wallet_mobile
+description: "Vote Wallet - Official Citizen Mobile Electoral Voting Wallet"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: ">=3.16.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Navigation & State
+  go_router: ^13.2.0
+  flutter_bloc: ^8.1.4
+  equatable: ^2.0.5
+
+  # Network & Cryptography
+  dio: ^5.4.1
+  crypto: ^3.0.3
+  encrypt: ^5.0.3
+
+  # Security & Biometrics
+  flutter_secure_storage: ^9.0.0
+  local_auth: ^2.1.8
+  flutter_windowmanager: ^0.2.0
+  camera: ^0.10.5+9
+
+  # UI & Presentation
+  intl: ^0.19.0
+  qr_flutter: ^4.1.0
+  google_fonts: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  generate: true
