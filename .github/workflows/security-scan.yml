@@ -60,15 +60,8 @@ jobs:
           EOF
 
       - name: Run Trivy Vulnerability Scanner
-        uses: aquasecurity/trivy-action@v0.28.0
-        continue-on-error: true
-        with:
-          image-ref: 'vote-wallet/web:scan'
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 0 vote-wallet/web:scan || true
 
   owasp-zap-scan:
     name: OWASP ZAP Dynamic API Baseline Scan
