@@ -35,7 +35,7 @@ export default function VotersListPage() {
       header: 'Voter Name & Photo',
       render: (voter) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full overflow-hidden bg-surface-100 border border-slate-700 flex items-center justify-center text-slate-400 shrink-0">
+          <div className="w-9 h-9 rounded-full overflow-hidden bg-amber-50 border border-yellow-200 flex items-center justify-center text-amber-700 shrink-0">
             {voter.photoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={voter.photoUrl} alt={voter.fullName} className="w-full h-full object-cover" />
@@ -44,8 +44,8 @@ export default function VotersListPage() {
             )}
           </div>
           <div>
-            <span className="font-bold text-white block">{voter.fullName}</span>
-            <span className="text-[11px] text-slate-400 font-mono">{voter.nationalId}</span>
+            <span className="font-bold text-slate-900 block">{voter.fullName}</span>
+            <span className="text-[11px] text-slate-500 font-mono">{voter.nationalId}</span>
           </div>
         </div>
       ),
@@ -53,8 +53,8 @@ export default function VotersListPage() {
     {
       header: 'Constituency',
       render: (voter) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-300">
-          <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+        <div className="flex items-center gap-1.5 text-xs text-slate-700">
+          <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
           <span>{voter.constituencyCode}</span>
         </div>
       ),
@@ -71,12 +71,12 @@ export default function VotersListPage() {
       header: 'Ballot Cast Status',
       render: (voter) =>
         voter.hasVoted ? (
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
             <CheckCircle2 className="w-3 h-3" />
             Voted
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 bg-surface-100 px-2 py-0.5 rounded border border-slate-800">
+          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-amber-50 px-2 py-0.5 rounded border border-yellow-200">
             Eligible
           </span>
         ),
@@ -86,13 +86,13 @@ export default function VotersListPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-yellow-200">
         <div>
-          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest block">
+          <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest block">
             Electoral Register
           </span>
-          <h1 className="text-2xl font-black text-white mt-0.5">Voter Registry List</h1>
-          <p className="text-xs text-slate-400">
+          <h1 className="text-2xl font-black text-slate-900 mt-0.5">Voter Registry List</h1>
+          <p className="text-xs text-slate-600">
             Official database of enrolled electors with biometric facial references.
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function VotersListPage() {
         <div className="flex items-center gap-2.5">
           <Link
             href="/voters/import"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-surface-200 hover:bg-surface-100 border border-slate-700 text-xs font-semibold text-slate-200 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-yellow-300 text-xs font-bold text-amber-900 transition-colors shadow-sm"
           >
             <Upload className="w-4 h-4" />
             Bulk CSV Import
@@ -108,7 +108,7 @@ export default function VotersListPage() {
 
           <Link
             href="/voters/new"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-xs font-bold text-white shadow-lg shadow-cyan-500/20 transition-all"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-xs font-black text-slate-950 shadow-md border border-yellow-400 transition-all"
           >
             <UserPlus className="w-4 h-4" />
             Enroll Voter

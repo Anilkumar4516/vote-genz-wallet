@@ -35,15 +35,15 @@ export default function AuditLogViewerPage() {
       header: 'Event ID & Time',
       render: (log) => (
         <div>
-          <span className="font-mono text-xs text-white font-bold block">{log.id}</span>
-          <span className="text-[11px] text-slate-400">{formatDate(log.timestamp)}</span>
+          <span className="font-mono text-xs text-slate-900 font-bold block">{log.id}</span>
+          <span className="text-[11px] text-slate-500">{formatDate(log.timestamp)}</span>
         </div>
       ),
     },
     {
       header: 'Action',
       render: (log) => (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/25">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-100 text-amber-900 border border-yellow-300 shadow-sm">
           {log.action}
         </span>
       ),
@@ -51,14 +51,14 @@ export default function AuditLogViewerPage() {
     {
       header: 'Actor',
       render: (log) => (
-        <span className="font-mono text-xs text-slate-300">{log.actor}</span>
+        <span className="font-mono text-xs text-slate-700">{log.actor}</span>
       ),
     },
     {
       header: 'SHA-256 Current Hash',
       render: (log) => (
-        <div className="flex items-center gap-1.5 font-mono text-xs text-slate-400">
-          <span className="text-emerald-400 font-semibold truncate max-w-[160px]">
+        <div className="flex items-center gap-1.5 font-mono text-xs text-slate-600">
+          <span className="text-emerald-700 font-bold truncate max-w-[160px]">
             {log.currentHash}
           </span>
         </div>
@@ -68,7 +68,7 @@ export default function AuditLogViewerPage() {
       header: 'Previous Hash (Chain Link)',
       render: (log) => (
         <div className="flex items-center gap-1 font-mono text-xs text-slate-500">
-          <Link2 className="w-3.5 h-3.5 text-cyan-500/60 shrink-0" />
+          <Link2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
           <span className="truncate max-w-[130px]">{log.previousHash}</span>
         </div>
       ),
@@ -78,20 +78,20 @@ export default function AuditLogViewerPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-yellow-200">
         <div>
-          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest block">
+          <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest block">
             Cryptographic Integrity Ledger
           </span>
-          <h1 className="text-2xl font-black text-white mt-0.5">Immutable Audit Log Viewer</h1>
-          <p className="text-xs text-slate-400">
+          <h1 className="text-2xl font-black text-slate-900 mt-0.5">Immutable Audit Log Viewer</h1>
+          <p className="text-xs text-slate-600">
             Hash-chained administrative, authentication, and cryptographic ballot events.
           </p>
         </div>
 
         <Link
           href="/audit/verify"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition-all self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-xs font-black text-slate-950 shadow-md border border-yellow-400 transition-all self-start sm:self-auto"
         >
           <CheckCircle2 className="w-4 h-4" />
           Run Hash-Chain Verification

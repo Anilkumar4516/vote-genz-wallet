@@ -76,29 +76,29 @@ export default function ElectionResultsPage() {
     <div className="space-y-6 max-w-4xl">
       <Link
         href="/elections"
-        className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-cyan-400 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-amber-800 font-bold transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Back to Elections Directory
       </Link>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-yellow-200">
         <div>
-          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block">
+          <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest block">
             Official Certified Outcome
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-white mt-0.5">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mt-0.5">
             Decrypted Election Tally
           </h1>
-          <p className="text-xs text-slate-400">{tally.title}</p>
+          <p className="text-xs text-slate-600">{tally.title}</p>
         </div>
 
         <div className="flex items-center gap-2">
           <StatusBadge status="TALLIED" size="md" />
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-surface-200 hover:bg-surface-100 border border-slate-700 text-xs font-semibold text-slate-200"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-yellow-300 text-xs font-bold text-amber-900 shadow-sm transition-colors"
           >
             <Printer className="w-3.5 h-3.5" />
             Print Gazette
@@ -107,39 +107,39 @@ export default function ElectionResultsPage() {
       </div>
 
       {/* Mathematical Parity Proof Box */}
-      <div className="p-5 rounded-3xl admin-card border border-emerald-500/40 bg-emerald-950/20 shadow-glow-emerald flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="p-5 rounded-3xl admin-card border border-emerald-300 bg-emerald-50/50 shadow-warm-card flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
+          <div className="p-3 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-white">
+            <h4 className="text-sm font-bold text-slate-900">
               Cryptographic Balance Verified: N(Ballots) &equiv; N(Participations)
             </h4>
-            <p className="text-xs text-slate-300 mt-0.5">
+            <p className="text-xs text-slate-600 mt-0.5">
               Exact mathematical match: <strong>{tally.totalBallotsCast.toLocaleString()}</strong> sealed ballots = <strong>{tally.totalParticipations.toLocaleString()}</strong> voter participations. Zero phantom ballots detected.
             </p>
           </div>
         </div>
 
-        <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-slate-950 text-xs font-black shrink-0">
+        <div className="px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-black shrink-0 shadow-sm">
           PARITY CONFIRMED
         </div>
       </div>
 
       {/* Candidate Vote Share Cards */}
       <div className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600">
           Decrypted Candidate Vote Distribution
         </h3>
 
         {tally.results.map((candidate, idx) => (
           <div
             key={candidate.candidateId}
-            className={`p-5 rounded-2xl admin-card border transition-all ${
+            className={`p-5 rounded-2xl admin-card border transition-all shadow-warm-card ${
               candidate.isWinner
-                ? 'border-cyan-400/50 bg-cyan-950/20 shadow-glow-cyan'
-                : 'border-slate-800'
+                ? 'border-amber-400 bg-amber-50/50'
+                : 'border-yellow-200 bg-white'
             }`}
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
@@ -147,45 +147,45 @@ export default function ElectionResultsPage() {
                 <div
                   className={`w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs ${
                     candidate.isWinner
-                      ? 'bg-cyan-500 text-slate-950'
-                      : 'bg-surface-200 text-slate-400 border border-slate-700'
+                      ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black'
+                      : 'bg-amber-50 text-slate-600 border border-yellow-200'
                   }`}
                 >
                   #{idx + 1}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="text-base font-extrabold text-white">
+                    <h4 className="text-base font-extrabold text-slate-900">
                       {candidate.candidateName}
                     </h4>
                     {candidate.isWinner && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                        <Award className="w-3 h-3 text-cyan-400" />
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black bg-amber-200 text-amber-950 border border-amber-300">
+                        <Award className="w-3 h-3 text-amber-700" />
                         ELECTED
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400 font-medium">{candidate.partyName}</p>
+                  <p className="text-xs text-slate-600 font-medium">{candidate.partyName}</p>
                 </div>
               </div>
 
               <div className="text-left sm:text-right font-mono">
-                <span className="text-lg font-black text-white">
+                <span className="text-lg font-black text-slate-900">
                   {candidate.votes.toLocaleString()}
                 </span>
-                <span className="text-xs font-bold text-cyan-400 ml-2">
+                <span className="text-xs font-bold text-amber-700 ml-2">
                   ({candidate.percentage}%)
                 </span>
               </div>
             </div>
 
             {/* Percentage Bar */}
-            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden mt-3">
+            <div className="w-full h-2 bg-yellow-100 rounded-full overflow-hidden mt-3">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
                   candidate.isWinner
-                    ? 'bg-gradient-to-r from-cyan-400 to-emerald-400'
-                    : 'bg-slate-500'
+                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500'
+                    : 'bg-amber-300'
                 }`}
                 style={{ width: `${candidate.percentage}%` }}
               />
@@ -195,14 +195,14 @@ export default function ElectionResultsPage() {
       </div>
 
       {/* Merkle Certificate Footer */}
-      <div className="rounded-2xl admin-card border border-slate-800 p-4 text-xs font-mono space-y-1.5 text-slate-400">
+      <div className="rounded-2xl admin-card border border-yellow-200 p-4 text-xs font-mono space-y-1.5 text-slate-600 bg-amber-50/60 shadow-sm">
         <div className="flex items-center justify-between">
           <span>Merkle Root Hash Certification:</span>
-          <span className="text-cyan-400 truncate max-w-sm">{tally.merkleRoot}</span>
+          <span className="text-amber-800 font-bold truncate max-w-sm">{tally.merkleRoot}</span>
         </div>
         <div className="flex items-center justify-between">
           <span>Tallied At:</span>
-          <span className="text-slate-200">{tally.talliedAt}</span>
+          <span className="text-slate-800 font-bold">{tally.talliedAt}</span>
         </div>
       </div>
     </div>

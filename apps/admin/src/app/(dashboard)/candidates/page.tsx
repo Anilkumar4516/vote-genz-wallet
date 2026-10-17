@@ -62,7 +62,7 @@ export default function CandidatesAdminPage() {
     {
       header: 'Ballot #',
       render: (cand) => (
-        <span className="font-mono font-black text-cyan-400 text-sm">
+        <span className="font-mono font-black text-amber-800 text-sm">
           #{cand.ballotNumber}
         </span>
       ),
@@ -72,12 +72,12 @@ export default function CandidatesAdminPage() {
       header: 'Candidate Name',
       render: (cand) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-surface-100 border border-slate-700 flex items-center justify-center text-slate-400 shrink-0">
+          <div className="w-8 h-8 rounded-full bg-amber-50 border border-yellow-200 flex items-center justify-center text-amber-700 shrink-0">
             <User className="w-4 h-4" />
           </div>
           <div>
-            <span className="font-bold text-white block">{cand.fullName}</span>
-            <span className="text-[11px] text-slate-400 font-mono">{cand.id}</span>
+            <span className="font-bold text-slate-900 block">{cand.fullName}</span>
+            <span className="text-[11px] text-slate-500 font-mono">{cand.id}</span>
           </div>
         </div>
       ),
@@ -90,7 +90,7 @@ export default function CandidatesAdminPage() {
       header: 'Electoral Biography',
       accessorKey: 'biography',
       render: (cand) => (
-        <span className="text-xs text-slate-300 line-clamp-1">{cand.biography || '—'}</span>
+        <span className="text-xs text-slate-600 line-clamp-1">{cand.biography || '—'}</span>
       ),
     },
   ];
@@ -98,20 +98,20 @@ export default function CandidatesAdminPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-yellow-200">
         <div>
-          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest block">
+          <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest block">
             Electoral Slate
           </span>
-          <h1 className="text-2xl font-black text-white mt-0.5">Candidate Nominations</h1>
-          <p className="text-xs text-slate-400">
+          <h1 className="text-2xl font-black text-slate-900 mt-0.5">Candidate Nominations</h1>
+          <p className="text-xs text-slate-600">
             Registered candidate slates approved for national parliamentary ballot papers.
           </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-xs font-bold text-white shadow-lg shadow-cyan-500/20 transition-all self-start sm:self-auto cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-xs font-black text-slate-950 shadow-md border border-yellow-400 transition-all self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           Nominate Candidate
@@ -131,13 +131,13 @@ export default function CandidatesAdminPage() {
 
       {/* Nomination Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md">
-          <div className="w-full max-w-lg rounded-3xl admin-card border border-cyan-500/30 p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-lg font-bold text-white">Nominate New Candidate</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+          <div className="w-full max-w-lg rounded-3xl admin-card border border-yellow-300 p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-yellow-200 pb-3">
+              <h3 className="text-lg font-bold text-slate-900">Nominate New Candidate</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white text-xs font-semibold"
+                className="text-slate-500 hover:text-slate-900 text-xs font-bold"
               >
                 Cancel
               </button>

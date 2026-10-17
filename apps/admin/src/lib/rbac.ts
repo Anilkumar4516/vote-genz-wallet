@@ -72,12 +72,12 @@ export function hasPermission(role: AdminRole | null | undefined, permission: Ad
 export function getRoleBadgeStyle(role: AdminRole): { bg: string; text: string; border: string } {
   switch (role) {
     case 'SUPER_ADMIN':
-      return { bg: 'bg-rose-500/15', text: 'text-rose-400', border: 'border-rose-500/30' };
+      return { bg: 'bg-rose-100', text: 'text-rose-800 font-extrabold', border: 'border-rose-300' };
     case 'COMMISSIONER':
-      return { bg: 'bg-indigo-500/15', text: 'text-indigo-400', border: 'border-indigo-500/30' };
+      return { bg: 'bg-amber-100', text: 'text-amber-900 font-extrabold', border: 'border-yellow-300' };
     case 'AUDITOR':
-      return { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30' };
+      return { bg: 'bg-emerald-100', text: 'text-emerald-800 font-extrabold', border: 'border-emerald-300' };
     case 'OPERATOR':
-      return { bg: 'bg-cyan-500/15', text: 'text-cyan-400', border: 'border-cyan-500/30' };
+      return { bg: 'bg-blue-100', text: 'text-blue-800 font-extrabold', border: 'border-blue-300' };
   }
 }

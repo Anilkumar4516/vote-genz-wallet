@@ -69,3 +69,33 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #eab308;
 }
+
+/* Admin Interactive Elements - Yellow & White Palette */
+.admin-input {
+  background: #ffffff;
+  border: 1.5px solid #fef08a;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.admin-input:focus {
+  border-color: #ca8a04;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+  outline: none;
+}
+
+.admin-btn-primary {
+  background: linear-gradient(135deg, #facc15, #eab308);
+  color: #0f172a;
+  border: 1px solid #ca8a04;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.25);
+  transition: all 0.2s;
+}
+
+.admin-btn-primary:hover {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+

@@ -55,7 +55,7 @@ export function DataTable<T extends { id?: string | number }>({
                 setCurrentPage(1);
               }}
               placeholder={searchPlaceholder}
-              className="w-full pl-10 pr-4 py-2 bg-surface-200/90 border border-slate-700/80 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+              className="w-full pl-10 pr-4 py-2 bg-white border border-yellow-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 shadow-sm"
             />
           </div>
         ) : <div />}
@@ -64,7 +64,7 @@ export function DataTable<T extends { id?: string | number }>({
       </div>
 
       {/* Table Surface */}
-      <div className="overflow-x-auto rounded-2xl admin-card border border-slate-800">
+      <div className="overflow-x-auto rounded-2xl admin-card border border-yellow-200 shadow-sm">
         <table className="admin-table">
           <thead>
             <tr>
@@ -98,8 +98,8 @@ export function DataTable<T extends { id?: string | number }>({
               <tr>
                 <td colSpan={columns.length} className="py-12 text-center text-slate-500">
                   <div className="flex flex-col items-center justify-center space-y-2">
-                    <Inbox className="w-8 h-8 text-slate-600" />
-                    <p className="text-xs font-semibold text-slate-400">No matching records found.</p>
+                    <Inbox className="w-8 h-8 text-amber-400" />
+                    <p className="text-xs font-semibold text-slate-500">No matching records found.</p>
                   </div>
                 </td>
               </tr>
@@ -109,7 +109,7 @@ export function DataTable<T extends { id?: string | number }>({
 
         {/* Pagination Footer */}
         {filteredData.length > pageSize && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-800/80 text-xs text-slate-400">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-yellow-200 text-xs text-slate-600 bg-amber-50/30">
             <span>
               Showing <strong>{startIndex + 1}</strong> to{' '}
               <strong>{Math.min(startIndex + pageSize, filteredData.length)}</strong> of{' '}
@@ -119,17 +119,17 @@ export function DataTable<T extends { id?: string | number }>({
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                className="p-1.5 rounded-lg border border-slate-700 bg-surface-100 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-surface-50 text-slate-300"
+                className="p-1.5 rounded-lg border border-yellow-300 bg-amber-50 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-amber-100 text-amber-900 transition-colors shadow-sm"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="px-2 font-mono text-xs font-bold text-white">
+              <span className="px-2 font-mono text-xs font-bold text-slate-900">
                 {currentPage} / {totalPages}
               </span>
               <button
                 disabled={currentPage >= totalPages}
                 onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                className="p-1.5 rounded-lg border border-slate-700 bg-surface-100 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-surface-50 text-slate-300"
+                className="p-1.5 rounded-lg border border-yellow-300 bg-amber-50 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-amber-100 text-amber-900 transition-colors shadow-sm"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

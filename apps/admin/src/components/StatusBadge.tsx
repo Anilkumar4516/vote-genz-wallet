@@ -16,22 +16,22 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' })
       case 'ACTIVE':
       case 'SUCCESS':
       case 'VALID':
-        return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
+        return 'bg-emerald-100 text-emerald-800 border-emerald-300 font-extrabold shadow-sm';
       case 'SCHEDULED':
       case 'PENDING':
-        return 'bg-blue-500/15 text-blue-400 border-blue-500/30';
+        return 'bg-blue-100 text-blue-800 border-blue-300 font-extrabold shadow-sm';
       case 'CLOSED':
-        return 'bg-sky-500/15 text-sky-400 border-sky-500/30';
+        return 'bg-amber-100 text-amber-900 border-yellow-400 font-extrabold shadow-sm';
       case 'SEALED':
       case 'TALLIED':
-        return 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30';
+        return 'bg-purple-100 text-purple-900 border-purple-300 font-extrabold shadow-sm';
       case 'SUSPENDED':
       case 'DECEASED':
       case 'CORRUPTED':
       case 'FAILED':
-        return 'bg-rose-500/15 text-rose-400 border-rose-500/30';
+        return 'bg-rose-100 text-rose-800 border-rose-300 font-extrabold shadow-sm';
       default:
-        return 'bg-slate-500/15 text-slate-400 border-slate-700';
+        return 'bg-amber-50 text-slate-700 border-yellow-200 font-extrabold shadow-sm';
     }
   };
 

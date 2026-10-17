@@ -28,15 +28,15 @@ export const TopNavbar: React.FC = () => {
   const roleStyle = user ? getRoleBadgeStyle(user.role) : null;
 
   return (
-    <header className="h-16 border-b border-slate-800 bg-surface-400/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30">
+    <header className="h-16 border-b border-yellow-200 bg-white/90 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
       {/* Left: Active Environment & UTC Clock */}
       <div className="flex items-center gap-4 text-xs font-mono">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-surface-200 border border-slate-700/80">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-emerald-400 font-bold">OPERATIONS CENTER ONLINE</span>
+        <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-200">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+          <span className="text-emerald-800 font-bold">OPERATIONS CENTER ONLINE</span>
         </div>
-        <div className="hidden sm:flex items-center gap-1.5 text-slate-400">
-          <Clock className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="hidden sm:flex items-center gap-1.5 text-slate-600">
+          <Clock className="w-3.5 h-3.5 text-amber-600" />
           <span>{time || '12:00:00 UTC'}</span>
         </div>
       </div>
@@ -46,7 +46,7 @@ export const TopNavbar: React.FC = () => {
         {user ? (
           <div className="flex items-center gap-3">
             <div className="flex flex-col text-right">
-              <span className="text-xs font-bold text-white">{user.name}</span>
+              <span className="text-xs font-bold text-slate-900">{user.name}</span>
               {roleStyle && (
                 <span
                   className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border inline-block mt-0.5 ${roleStyle.bg} ${roleStyle.text} ${roleStyle.border}`}
@@ -56,13 +56,13 @@ export const TopNavbar: React.FC = () => {
               )}
             </div>
 
-            <div className="w-9 h-9 rounded-full bg-surface-100 border border-slate-700 flex items-center justify-center text-cyan-400 shadow-sm">
+            <div className="w-9 h-9 rounded-full bg-amber-100 border border-yellow-300 flex items-center justify-center text-amber-700 shadow-sm">
               <User className="w-4 h-4" />
             </div>
 
             <button
               onClick={handleLogout}
-              className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition-colors ml-1"
+              className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors ml-1"
               title="Sign Out of Operations Console"
               aria-label="Sign Out"
             >
@@ -72,7 +72,7 @@ export const TopNavbar: React.FC = () => {
         ) : (
           <button
             onClick={() => router.push('/login')}
-            className="text-xs text-cyan-400 hover:underline font-semibold"
+            className="text-xs text-amber-700 hover:underline font-bold"
           >
             Sign In &rarr;
           </button>

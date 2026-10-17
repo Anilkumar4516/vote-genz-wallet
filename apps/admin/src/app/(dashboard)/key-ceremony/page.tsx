@@ -80,14 +80,14 @@ export default function KeyCeremonyPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
-      <div className="pb-4 border-b border-slate-800">
-        <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest block">
+      <div className="pb-4 border-b border-yellow-200">
+        <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest block">
           Cryptographic Decryption Protocol
         </span>
-        <h1 className="text-2xl font-black text-white mt-0.5">
+        <h1 className="text-2xl font-black text-slate-900 mt-0.5">
           2-of-3 Shamir Key Ceremony
         </h1>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-600">
           Ballots remain encrypted with collective public keys until at least 2 trustees independently provide their cryptographic shares.
         </p>
       </div>
@@ -96,8 +96,8 @@ export default function KeyCeremonyPage() {
       <div
         className={`p-6 rounded-3xl admin-card border transition-all duration-300 ${
           isThresholdMet
-            ? 'border-emerald-500/40 shadow-glow-emerald bg-emerald-950/20'
-            : 'border-sky-500/40 shadow-glow-sky bg-sky-950/20'
+            ? 'border-emerald-300 shadow-warm-card bg-emerald-50/40'
+            : 'border-yellow-300 shadow-warm-card bg-amber-50/40'
         }`}
       >
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -105,22 +105,22 @@ export default function KeyCeremonyPage() {
             <div
               className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border ${
                 isThresholdMet
-                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                  : 'bg-sky-500/20 text-sky-400 border-sky-500/40'
+                  ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                  : 'bg-amber-100 text-amber-800 border-yellow-300'
               }`}
             >
               {isThresholdMet ? <Unlock className="w-7 h-7" /> : <Lock className="w-7 h-7" />}
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
                 Threshold Status ({submittedCount} of 3 Shares Collected)
               </span>
-              <h3 className="text-xl font-black text-white mt-0.5">
+              <h3 className="text-xl font-black text-slate-900 mt-0.5">
                 {isThresholdMet
                   ? 'Quorum Achieved • Tally Key Reconstructible'
                   : 'Awaiting Trustee Shares'}
               </h3>
-              <p className="text-xs text-slate-300 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5">
                 {isThresholdMet
                   ? 'The collective private key can now decrypt sealed ballots and verify final candidate vote totals.'
                   : 'At least 2 shares are required by constitutional protocol to reconstruct the decryption key.'}
@@ -131,7 +131,7 @@ export default function KeyCeremonyPage() {
           {isThresholdMet && (
             <a
               href="/results/elec_2026_national_general"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/20 transition-all shrink-0 cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 font-black text-xs shadow-md border border-yellow-400 transition-all shrink-0 cursor-pointer"
             >
               Generate Official Tally
               <ArrowRight className="w-4 h-4" />
@@ -141,8 +141,8 @@ export default function KeyCeremonyPage() {
       </div>
 
       {successMessage && (
-        <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-600/50 text-emerald-300 text-xs flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-3">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
           <span>{successMessage}</span>
         </div>
       )}
@@ -154,28 +154,28 @@ export default function KeyCeremonyPage() {
             key={trustee.id}
             className={`p-5 rounded-2xl admin-card border transition-all ${
               trustee.hasSubmitted
-                ? 'border-emerald-500/30 bg-surface-200/90'
-                : 'border-slate-800 bg-surface-300/60'
+                ? 'border-emerald-300 bg-white shadow-sm'
+                : 'border-yellow-200 bg-white shadow-sm'
             }`}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">
+              <span className="text-[10px] font-mono font-bold text-slate-500 uppercase">
                 {trustee.id}
               </span>
               {trustee.hasSubmitted ? (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
                   <CheckCircle2 className="w-3 h-3" />
                   Submitted
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-yellow-300">
                   Awaiting
                 </span>
               )}
             </div>
 
-            <h4 className="text-sm font-extrabold text-white">{trustee.name}</h4>
-            <p className="text-xs text-slate-400 mt-0.5">{trustee.title}</p>
+            <h4 className="text-sm font-extrabold text-slate-900">{trustee.name}</h4>
+            <p className="text-xs text-slate-600 mt-0.5">{trustee.title}</p>
 
             {trustee.hasSubmitted && trustee.submittedAt && (
               <span className="text-[10px] text-slate-500 font-mono mt-3 block">
@@ -187,22 +187,22 @@ export default function KeyCeremonyPage() {
       </div>
 
       {/* Share Submission Form for Unsubmitted Trustees */}
-      <div className="rounded-3xl admin-card border border-slate-800 p-6 sm:p-8 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-          <KeyRound className="w-4 h-4 text-cyan-400" />
+      <div className="rounded-3xl admin-card border border-yellow-200 p-6 sm:p-8 space-y-4 bg-white shadow-warm-card">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+          <KeyRound className="w-4 h-4 text-amber-600" />
           Submit Trustee Cryptographic Share
         </h3>
 
         <form onSubmit={handleShareSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                 Trustee Authority
               </label>
               <select
                 value={selectedTrustee}
                 onChange={(e) => setSelectedTrustee(e.target.value)}
-                className="w-full px-4 py-2.5 bg-surface-200 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                className="w-full px-4 py-2.5 bg-white border border-yellow-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-amber-500 shadow-sm"
               >
                 {trustees.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -213,7 +213,7 @@ export default function KeyCeremonyPage() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                 Shamir Key Share Payload (Hexadecimal)
               </label>
               <input
@@ -222,7 +222,7 @@ export default function KeyCeremonyPage() {
                 value={enteredShare}
                 onChange={(e) => setEnteredShare(e.target.value)}
                 placeholder="e.g. 02e4f8819a0b3c4d5e6f708192a3b4c5d6e7f8..."
-                className="w-full px-4 py-2.5 bg-surface-200 border border-slate-700 rounded-xl text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
+                className="w-full px-4 py-2.5 bg-white border border-yellow-300 rounded-xl text-xs font-mono text-amber-950 focus:outline-none focus:border-amber-500 shadow-sm"
               />
             </div>
           </div>
@@ -233,7 +233,7 @@ export default function KeyCeremonyPage() {
               onClick={() =>
                 setEnteredShare('03a98f12b03c49e782f9104b92c819203a9b1c2d3e4f5061728394a5b6c7d8e9')
               }
-              className="text-[11px] text-cyan-400 hover:underline font-semibold"
+              className="text-[11px] text-amber-700 hover:underline font-bold"
             >
               Autofill Sample Share for Trustee 3
             </button>
@@ -241,7 +241,7 @@ export default function KeyCeremonyPage() {
             <button
               type="submit"
               disabled={isLoading || !enteredShare}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-cyan-500/20 disabled:opacity-50 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 font-black text-xs shadow-md border border-yellow-400 disabled:opacity-50 transition-all cursor-pointer"
             >
               <span>{isLoading ? 'Verifying...' : 'Ingest Key Share'}</span>
             </button>

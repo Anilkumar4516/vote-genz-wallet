@@ -33,20 +33,20 @@ export default function ElectionsListPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-yellow-200">
         <div>
-          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest block">
+          <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest block">
             Electoral Calendar
           </span>
-          <h1 className="text-2xl font-black text-white mt-0.5">Elections Directory</h1>
-          <p className="text-xs text-slate-400">
+          <h1 className="text-2xl font-black text-slate-900 mt-0.5">Elections Directory</h1>
+          <p className="text-xs text-slate-600">
             Active, scheduled, and concluded national and state elections.
           </p>
         </div>
 
         <Link
           href="/elections/new"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-400 hover:to-cyan-400 text-xs font-bold text-white shadow-lg shadow-indigo-500/20 transition-all self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-xs font-black text-slate-950 shadow-md border border-yellow-400 transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           Schedule Election
@@ -58,38 +58,38 @@ export default function ElectionsListPage() {
         {elections.map((election) => (
           <div
             key={election.id}
-            className="rounded-3xl admin-card border border-slate-800 hover:border-cyan-500/30 p-6 transition-all duration-200 flex flex-col justify-between space-y-4"
+            className="rounded-3xl admin-card border border-yellow-200 hover:border-yellow-400 p-6 transition-all duration-200 flex flex-col justify-between space-y-4 shadow-warm-card bg-white"
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-800 font-mono">
                   {election.type}
                 </span>
                 <StatusBadge status={election.status} size="sm" />
               </div>
 
-              <h3 className="text-lg font-extrabold text-white">{election.title}</h3>
-              <p className="text-xs text-slate-400 line-clamp-2">{election.description}</p>
+              <h3 className="text-lg font-extrabold text-slate-900">{election.title}</h3>
+              <p className="text-xs text-slate-600 line-clamp-2">{election.description}</p>
             </div>
 
-            <div className="rounded-2xl bg-surface-200/80 p-3.5 border border-slate-800/80 text-xs space-y-2">
-              <div className="flex items-center justify-between text-slate-300">
-                <span className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                  <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="rounded-2xl bg-amber-50/70 p-3.5 border border-yellow-200 text-xs space-y-2">
+              <div className="flex items-center justify-between text-slate-700">
+                <span className="flex items-center gap-1.5 text-slate-600 text-[11px]">
+                  <Calendar className="w-3.5 h-3.5 text-amber-600" />
                   Polls Open:
                 </span>
                 <span className="font-mono">{formatDate(election.startTime)}</span>
               </div>
-              <div className="flex items-center justify-between text-slate-300">
-                <span className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                  <Calendar className="w-3.5 h-3.5 text-sky-400" />
+              <div className="flex items-center justify-between text-slate-700">
+                <span className="flex items-center gap-1.5 text-slate-600 text-[11px]">
+                  <Calendar className="w-3.5 h-3.5 text-amber-600" />
                   Polls Close:
                 </span>
                 <span className="font-mono">{formatDate(election.endTime)}</span>
               </div>
-              <div className="flex items-center justify-between text-slate-300 pt-1 border-t border-slate-800">
-                <span className="text-slate-400 text-[11px]">Constituencies:</span>
-                <span className="font-bold text-white">
+              <div className="flex items-center justify-between text-slate-700 pt-1 border-t border-yellow-200">
+                <span className="text-slate-600 text-[11px]">Constituencies:</span>
+                <span className="font-bold text-slate-900">
                   {election.constituencyCodes?.join(', ') || 'Nationwide'}
                 </span>
               </div>
@@ -98,7 +98,7 @@ export default function ElectionsListPage() {
             <div className="pt-2 flex items-center justify-between">
               <Link
                 href={`/candidates?electionId=${election.id}`}
-                className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-cyan-400 transition-colors font-semibold"
+                className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-amber-800 transition-colors font-semibold"
               >
                 <Award className="w-3.5 h-3.5" />
                 View Slate Candidates
@@ -106,7 +106,7 @@ export default function ElectionsListPage() {
 
               <Link
                 href={`/elections/${election.id}`}
-                className="inline-flex items-center gap-1 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors"
+                className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 hover:text-amber-900 transition-colors"
               >
                 Console & Actions
                 <ArrowRight className="w-3.5 h-3.5" />

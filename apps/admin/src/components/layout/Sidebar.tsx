@@ -78,17 +78,17 @@ export const Sidebar: React.FC = () => {
   );
 
   return (
-    <aside className="w-64 border-r border-slate-800/80 bg-surface-400/90 flex flex-col shrink-0 min-h-screen">
+    <aside className="w-64 border-r border-yellow-200 bg-white/95 flex flex-col shrink-0 min-h-screen shadow-sm">
       {/* Brand Header */}
-      <div className="h-16 px-6 border-b border-slate-800 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-indigo-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shadow-glow-cyan">
+      <div className="h-16 px-6 border-b border-yellow-200 flex items-center gap-3 bg-amber-50/40">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-500 border border-yellow-400 flex items-center justify-center text-slate-900 shadow-sm">
           <ShieldCheck className="w-5 h-5" />
         </div>
         <div>
-          <span className="font-extrabold text-sm text-white tracking-wide block">
+          <span className="font-extrabold text-sm text-slate-900 tracking-wide block">
             VOTE WALLET
           </span>
-          <span className="text-[10px] text-cyan-400 font-mono font-bold tracking-wider block">
+          <span className="text-[10px] text-amber-700 font-mono font-bold tracking-wider block">
             COMMISSION CONSOLE
           </span>
         </div>
@@ -114,14 +114,14 @@ export const Sidebar: React.FC = () => {
               className={cn(
                 'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150',
                 isActive
-                  ? 'bg-gradient-to-r from-cyan-500/20 to-indigo-500/10 text-cyan-300 border border-cyan-500/30 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-surface-200',
+                  ? 'bg-amber-100 text-amber-900 border border-yellow-300 font-bold shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-amber-50/80',
               )}
             >
               <Icon
                 className={cn(
                   'w-4 h-4 transition-colors',
-                  isActive ? 'text-cyan-400' : 'text-slate-400',
+                  isActive ? 'text-amber-700' : 'text-slate-500',
                 )}
               />
               <span>{item.label}</span>
@@ -131,13 +131,13 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* Security Status Box in Sidebar */}
-      <div className="p-4 border-t border-slate-800 text-[11px] text-slate-400">
-        <div className="p-3 rounded-xl bg-surface-200/60 border border-slate-700/60 space-y-1">
-          <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+      <div className="p-4 border-t border-yellow-200 text-[11px] text-slate-600">
+        <div className="p-3 rounded-xl bg-amber-50/80 border border-yellow-200 space-y-1">
+          <div className="flex items-center gap-1.5 text-emerald-700 font-bold">
             <Lock className="w-3.5 h-3.5" />
             Dual-DB Isolation Active
           </div>
-          <p className="text-[10px] text-slate-500">
+          <p className="text-[10px] text-slate-600">
             Ballot Box DB credentials physically segregated from Voter Registry.
           </p>
         </div>
