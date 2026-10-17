@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '../../lib/utils';
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  glow?: 'cyan' | 'emerald' | 'none';
+  glow?: 'cyan' | 'emerald' | 'amber' | 'yellow' | 'none';
   variant?: 'glass' | 'solid' | 'interactive';
 }
 
@@ -17,6 +17,8 @@ export const Card: React.FC<CardProps> = ({
     none: '',
     cyan: 'border-cyan-500/30 shadow-glow-cyan',
     emerald: 'border-emerald-500/30 shadow-glow-emerald',
+    amber: 'border-yellow-400 shadow-md',
+    yellow: 'border-yellow-300 shadow-md',
   };
 
   const variantClasses = {

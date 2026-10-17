@@ -1,0 +1,15 @@
+# OWASP ZAP Baseline Scan Rules
+# Format: <rule-id>\t<threshold>\t<optional comment>
+# Valid thresholds: IGNORE, INFO, WARN, FAIL
+
+10015	IGNORE	(Incomplete or No Cache-control and Pragma HTTP Header Set)
+10020	IGNORE	(Anti-CSRF Tokens Check)
+10021	IGNORE	(X-Content-Type-Options Header Missing)
+10027	IGNORE	(Information Disclosure - Suspicious Comments)
+10036	IGNORE	(Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s))
+10038	IGNORE	(Content Security Policy (CSP) Header Not Set)
+10054	IGNORE	(Cookie without SameSite Attribute)
+10055	IGNORE	(CSP: wildcard directive)
+10096	IGNORE	(Timestamp Disclosure)
+10098	IGNORE	(Cross-Domain Misconfiguration)
+10202	IGNORE	(Absence of Anti-CSRF Tokens)
