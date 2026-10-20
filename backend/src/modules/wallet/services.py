@@ -14,6 +14,7 @@ class WalletService:
         self.repo = WalletRepository(db)
 
     def append_ledger(self, action_type: str, detail: str) -> str:
+        from src.core.events import broadcast_event
         last_tx = self.repo.get_latest_transaction()
         prev_hash = last_tx.tx_hash if last_tx else "0" * 64
         timestamp = datetime.now(timezone.utc).isoformat()
@@ -23,7 +24,15 @@ class WalletService:
             f"{prev_hash}|{action_type}|{detail}|{timestamp}".encode()
         ).hexdigest()
 
-        self.repo.record_transaction(tx_hash, prev_hash, action_type, detail)
+        tx = self.repo.record_transaction(tx_hash, prev_hash, action_type, detail)
+        broadcast_event("LEDGER_TRANSACTION", {
+            "id": tx.id,
+            "hash": tx_hash,
+            "prevHash": prev_hash,
+            "actionType": action_type,
+            "detail": detail,
+            "timestamp": timestamp
+        })
         return tx_hash
 
     def list_wallets(self) -> list:

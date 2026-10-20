@@ -15,7 +15,8 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@vote-wallet/shared-types": "file:../shared-types"
+    "@vote-wallet/shared-types": "file:../shared-types",
+    "vote-genz-wallet": "file:../.."
   },
   "devDependencies": {
     "typescript": "^5.3.3"

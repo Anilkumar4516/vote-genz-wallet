@@ -141,9 +141,15 @@ pnpm test
 ## 🔍 Cryptographic Verification & Service Endpoints
 
 - **Gateway Health Probe:** `GET /api/health`
-- **Auth Service:** `POST /api/auth/login`, `POST /api/auth/webauthn/verify`
-- **Voting Ballot Ingestion:** `POST /api/vote/cast` (Redis Streams `XADD`)
-- **Merkle Inclusion Proof:** `GET /api/vote/merkle-proof/:receiptHash`
-- **Public Receipt Verification:** `GET /api/vote/receipt/:code`
-- **Audit Hash Chain:** `GET /api/audit/verify-chain`
+- **Prometheus Metrics:** `GET /metrics`
+- **Real-Time Live SSE Stream:** `GET /api/election/stream` (0ms push for `BALLOT_SEALED`, `MERKLE_ROOT_SEALED`, `LIVE_STATS_REFRESH`)
+- **Duplex WebSocket Stream:** `WS /ws/election` (Real-time live telemetry stream)
+- **Real-Time Turnout & Leaderboard:** `GET /api/election/live-stats`
+- **Auth Service:** `POST /api/auth/login`, `POST /api/auth/verify-otp`, `GET /api/auth/webauthn-challenge`
+- **Voting Ballot Ingestion:** `POST /api/vote/cast` (Redis Streams `XADD` with atomic token burn)
+- **Merkle Inclusion Proof:** `GET /api/vote/merkle-proof/:receiptHash` ($O(\log N)$ verification)
+- **Public Receipt Verification:** `GET /api/vote/receipt/:code` (Zero-knowledge confirmation)
+- **Audit Hash Chain Integrity:** `GET /api/audit/verify-chain` (Full SHA-256 chain verification)
+- **Biometric Challenge Audit:** `GET /api/audit/biometrics` (Biometric challenge logs)
+- **Admin Election Controls:** `POST /api/admin/elections/:id/close`, `POST /api/admin/elections/:id/reopen`, `POST /api/admin/elections/:id/tally`, `POST /api/admin/reset-election`
 

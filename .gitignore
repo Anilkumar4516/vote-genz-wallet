@@ -27,6 +27,12 @@ dist/
 db/*.sqlite
 db/*.sqlite-journal
 db/*.db
+*.sqlite3
+**/*.sqlite3
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
 *.log
 npm-debug.log*
 yarn-debug.log*

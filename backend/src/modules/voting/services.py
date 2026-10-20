@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from src.core.exceptions import NotFoundException, ForbiddenException, DuplicateVoteException, InvalidTokenException
 from src.core.security import encrypt_ballot_choice
 from src.core.redis import enqueue_ballot_stream
+from src.core.events import broadcast_event
+from src.modules.wallet.models import Transaction
 from src.utils.cryptography import MerkleTree, hash_leaf
 from src.modules.voting.repository import VotingRepository
 
@@ -89,7 +91,43 @@ class VotingService:
         self.repo.record_participation(voter_id, election_id)
         self.repo.save_ballot(election_id, encrypted_choice, receipt_hash, created_hour, leaf_hash)
         self.repo.increment_candidate_vote(candidate_id)
+
+        # Hash-chained transaction audit logging
+        latest_tx = self.db.query(Transaction).order_by(Transaction.id.desc()).first()
+        prev_hash = latest_tx.tx_hash if latest_tx else "0" * 64
+        now_iso = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+        raw_chain = f"{prev_hash}|BALLOT_SEALED|Encrypted ballot recorded with receipt hash {receipt_hash[:16]}... (zero voter link)|{now_iso}"
+        tx_hash = hashlib.sha256(raw_chain.encode("utf-8")).hexdigest()
+
+        tx = Transaction(
+            tx_hash=tx_hash,
+            prev_hash=prev_hash,
+            action_type="BALLOT_SEALED",
+            detail=f"Encrypted ballot recorded with receipt hash {receipt_hash[:16]}... (zero voter link)",
+            created_at=now
+        )
+        self.db.add(tx)
         self.db.commit()
+
+        # Real-time event broadcasting to connected SSE & WebSocket clients
+        broadcast_event("BALLOT_SEALED", {
+            "receiptHash": receipt_hash,
+            "timestamp": created_hour,
+            "candidateName": candidate.name,
+            "electionId": election_id
+        })
+        broadcast_event("LIVE_STATS_REFRESH", {
+            "votesCastIncrement": 1,
+            "electionId": election_id
+        })
+        broadcast_event("LEDGER_TRANSACTION", {
+            "id": tx.id,
+            "hash": tx_hash,
+            "prevHash": prev_hash,
+            "actionType": "BALLOT_SEALED",
+            "detail": tx.detail,
+            "timestamp": now_iso
+        })
 
         return {
             "success": True,

@@ -3,12 +3,18 @@
   "version": "2.0.0",
   "description": "Production-grade, scalable voting wallet and cryptographic Merkle audit ledger application",
   "main": "apps/web/index.js",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "services/*"
+  ],
   "scripts": {
     "start": "node apps/web/index.js",
     "dev": "node --watch apps/web/index.js",
     "dev:web": "npm --prefix apps/web run dev",
     "dev:admin": "npm --prefix apps/admin run dev",
-    "build:packages": "npm --prefix packages/shared-types run build && npm --prefix packages/audit-client run build && npm --prefix packages/api-client run build",
+    "build:packages": "npm --prefix packages/shared-types install && npm --prefix packages/shared-types run build && npm --prefix packages/audit-client install && npm --prefix packages/audit-client run build && npm --prefix packages/api-client install && npm --prefix packages/api-client run build",
+    "install:all": "npm install && npm --prefix packages/shared-types install && npm --prefix packages/audit-client install && npm --prefix packages/api-client install && npm --prefix apps/web install && npm --prefix apps/admin install",
     "build:apps": "npm --prefix apps/web run build && npm --prefix apps/admin run build",
     "worker": "node services/worker.js",
     "test": "node test/concurrency-and-merkle.test.js && node test/e2e-voting-lifecycle.test.js",

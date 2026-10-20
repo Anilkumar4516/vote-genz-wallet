@@ -7,11 +7,17 @@ logger = logging.getLogger(__name__)
 settings = get_settings()
 
 _redis_pool = None
+_last_failure_time = 0.0
+FAILURE_COOLDOWN_SEC = 5.0
 
 
 def get_redis_client() -> redis.Redis | None:
-    """Returns a pooled Redis client or None if Redis is unreachable."""
-    global _redis_pool
+    """Returns a pooled Redis client or None if Redis is unreachable. Uses a cooldown cache when offline."""
+    global _redis_pool, _last_failure_time
+    now = time.time()
+    if now - _last_failure_time < FAILURE_COOLDOWN_SEC:
+        return None
+
     if _redis_pool is None:
         try:
             _redis_pool = redis.ConnectionPool(
@@ -20,11 +26,12 @@ def get_redis_client() -> redis.Redis | None:
                 password=settings.REDIS_PASSWORD,
                 db=settings.REDIS_DB,
                 decode_responses=True,
-                socket_timeout=2.0,
-                socket_connect_timeout=2.0,
+                socket_timeout=1.0,
+                socket_connect_timeout=1.0,
                 max_connections=50
             )
         except Exception as e:
+            _last_failure_time = now
             logger.warning(f"Failed to initialize Redis connection pool: {e}")
             return None
 
@@ -33,6 +40,7 @@ def get_redis_client() -> redis.Redis | None:
         client.ping()
         return client
     except Exception as e:
+        _last_failure_time = now
         logger.warning(f"Redis unavailable ({e}), operating in local fallback.")
         return None
 
@@ -96,3 +104,25 @@ def check_rate_limit(key: str, limit: int, window_sec: int) -> tuple[bool, int]:
 
     count = results[2]
     return count <= limit, max(0, limit - count)
+
+
+REDIS_PUBSUB_CHANNEL = "election:events"
+
+
+def publish_election_event(event_type: str, data: dict) -> bool:
+    """Publishes a real-time event across the distributed Redis cluster."""
+    import json
+    client = get_redis_client()
+    if not client:
+        return False
+    try:
+        message = json.dumps({
+            "type": event_type,
+            "data": data,
+            "timestamp": time.time()
+        })
+        client.publish(REDIS_PUBSUB_CHANNEL, message)
+        return True
+    except Exception as e:
+        logger.error(f"Failed to publish election event: {e}")
+        return False

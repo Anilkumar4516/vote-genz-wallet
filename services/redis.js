@@ -175,11 +175,56 @@ async function checkRateLimit(identifier, action, limit, windowSec) {
   };
 }
 
+const REDIS_PUBSUB_CHANNEL = 'election:events';
+let subClient = null;
+
+/**
+ * Publish real-time election event across Redis cluster
+ */
+async function publishEvent(eventType, payload) {
+  if (!isConnected()) return false;
+  try {
+    const client = getRedisClient();
+    const data = JSON.stringify({ type: eventType, data: payload, timestamp: new Date().toISOString() });
+    await client.publish(REDIS_PUBSUB_CHANNEL, data);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+/**
+ * Subscribe to real-time election events across Redis cluster
+ */
+async function subscribeEvents(callback) {
+  if (!isConnected()) return false;
+  try {
+    if (!subClient) {
+      subClient = getRedisClient().duplicate();
+      await subClient.connect();
+      await subClient.subscribe(REDIS_PUBSUB_CHANNEL);
+      subClient.on('message', (channel, message) => {
+        if (channel === REDIS_PUBSUB_CHANNEL) {
+          try {
+            const parsed = JSON.parse(message);
+            callback(parsed.type, parsed.data);
+          } catch (_) {}
+        }
+      });
+    }
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 module.exports = {
   getRedisClient,
   initRedis,
   isConnected,
   enqueueBallot,
   ensureConsumerGroup,
-  checkRateLimit
+  checkRateLimit,
+  publishEvent,
+  subscribeEvents
 };

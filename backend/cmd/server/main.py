@@ -12,9 +12,11 @@ from src.modules.auth.controllers import router as auth_router
 from src.modules.voting.controllers import router as voting_router
 from src.modules.wallet.controllers import router as wallet_router
 from src.modules.users.controllers import router as users_router
+from src.modules.admin.controllers import router as admin_router
 from src.modules.users.models import Voter
-from src.modules.voting.models import Election, Candidate
+from src.modules.voting.models import Election, Candidate, Ballot
 from src.modules.wallet.models import Wallet
+from src.core.events import get_connected_clients_count
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s")
 logger = logging.getLogger("server")
@@ -112,9 +114,11 @@ app.include_router(auth_router)
 app.include_router(voting_router)
 app.include_router(wallet_router)
 app.include_router(users_router)
+app.include_router(admin_router)
 
 
 @app.get("/health", tags=["Health"])
+@app.get("/api/health", tags=["Health"])
 async def health_check():
     """Production readiness & liveness probe."""
     redis_client = get_redis_client()
@@ -123,5 +127,34 @@ async def health_check():
         "service": settings.APP_NAME,
         "environment": settings.ENV,
         "database": "postgresql" if "postgres" in settings.DATABASE_URL else "sqlite",
-        "redis": "connected" if redis_client else "offline_fallback"
+        "redis": "connected" if redis_client else "offline_fallback",
+        "connected_clients": get_connected_clients_count()
     }
+
+
+@app.get("/metrics", tags=["Monitoring"])
+async def prometheus_metrics():
+    """Prometheus-compatible real-time performance and audit metrics."""
+    from fastapi.responses import PlainTextResponse
+    db = SessionLocal()
+    try:
+        ballots_count = db.query(Ballot).count()
+        voters_count = db.query(Voter).count()
+    finally:
+        db.close()
+
+    lines = [
+        "# HELP vote_wallet_ballots_total Total count of encrypted ballots sealed in ballot box",
+        "# TYPE vote_wallet_ballots_total counter",
+        f"vote_wallet_ballots_total {ballots_count}",
+        "# HELP vote_wallet_voters_registered Registered citizens eligible to vote",
+        "# TYPE vote_wallet_voters_registered gauge",
+        f"vote_wallet_voters_registered {voters_count}",
+        "# HELP vote_wallet_realtime_clients Active SSE and WebSocket client connections",
+        "# TYPE vote_wallet_realtime_clients gauge",
+        f"vote_wallet_realtime_clients {get_connected_clients_count()}",
+        "# HELP vote_wallet_info Build and operational metadata",
+        "# TYPE vote_wallet_info gauge",
+        'vote_wallet_info{version="2.0.0",crypto="AES-256-CBC,SHA-256-Merkle"} 1'
+    ]
+    return PlainTextResponse("\n".join(lines) + "\n", media_type="text/plain; version=0.0.4")

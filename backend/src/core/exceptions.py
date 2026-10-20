@@ -72,3 +72,13 @@ class RateLimitException(AppException):
             message=message,
             error_code="RATE_LIMIT_EXCEEDED"
         )
+
+
+class BadRequestException(AppException):
+    def __init__(self, message: str = "Bad request", details: Any = None):
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            message=message,
+            error_code="BAD_REQUEST",
+            details=details
+        )

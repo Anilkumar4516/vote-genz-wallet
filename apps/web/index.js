@@ -6,7 +6,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 // Production Scalability & Cryptography Modules
-const { initRedis, isConnected: isRedisConnected, enqueueBallot, checkRateLimit } = require('../../services/redis');
+const { initRedis, isConnected: isRedisConnected, enqueueBallot, checkRateLimit, publishEvent, subscribeEvents } = require('../../services/redis');
 const { MerkleTree, hashLeaf } = require('../../services/merkle');
 const { initPostgresSchema } = require('../../db/connection');
 
@@ -30,7 +30,12 @@ const DB_PATH = path.join(DB_DIR, 'vote_wallet.sqlite');
 const db = new sqlite3.Database(DB_PATH);
 
 // Bootstrap Redis & PostgreSQL if configured
-initRedis().catch(err => console.warn('Redis notice:', err.message));
+initRedis().then(() => {
+  subscribeEvents((type, data) => {
+    broadcastLocal(type, data);
+  }).catch(() => {});
+}).catch(err => console.warn('Redis notice:', err.message));
+
 if (process.env.DATABASE_URL) {
   initPostgresSchema().catch(err => console.warn('Postgres notice:', err.message));
 }
@@ -45,7 +50,7 @@ const sessionStore = new Map(); // token -> { voterId, voterCode, faceVerified, 
 // Real-Time Server-Sent Events (SSE) Client Registry
 const sseClients = new Set();
 
-function broadcastEvent(eventType, payload) {
+function broadcastLocal(eventType, payload) {
   const data = JSON.stringify({ type: eventType, data: payload, timestamp: new Date().toISOString() });
   const message = `data: ${data}\n\n`;
   for (const client of sseClients) {
@@ -55,6 +60,11 @@ function broadcastEvent(eventType, payload) {
       sseClients.delete(client);
     }
   }
+}
+
+function broadcastEvent(eventType, payload) {
+  broadcastLocal(eventType, payload);
+  publishEvent(eventType, payload).catch(() => {});
 }
 
 // Cryptographic Helper: SHA-256 Hash Calculation for Audit Log
