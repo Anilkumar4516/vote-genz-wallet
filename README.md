@@ -1,155 +1,146 @@
-# 🏛️ Vote Wallet (Production-Grade & 1M-User Scalable)
+# 🗳️ Vote Wallet — Cryptographic Voting & Merkle Audit Ledger
 
-A bank-grade, high-throughput voting platform and cryptographic Merkle audit ledger built with **Node.js, Express, PostgreSQL 16 (Drizzle ORM), Redis Streams, and Kubernetes**, engineered to handle **1,000,000+ registered citizens**.
+An electronic voting platform prototype and cryptographic audit ledger built with **Node.js, Express, SQLite / PostgreSQL, and Redis Streams**, designed for voter-verifiable ballot inclusion and tamper-evident audit trails.
 
 ---
 
-## 🌐 Live Application Portals & Local Access
+## 📌 What I Built & What I Learned
 
-| Application Portal | Local URL | Target Audience & Features |
+### What I Built
+- **Cryptographic Merkle Audit Tree:** Implemented an RFC 6962-compliant binary Merkle tree engine generating $O(\log N)$ inclusion proofs. This allows voters to mathematically verify that their cast ballot is sealed in the election ledger without disclosing voter identity or ballot selections.
+- **Decoupled Ballot Architecture:** Engineered a voting pipeline that decouples citizen identity tokens from cast ballots. Ballots are encrypted using AES-256 and stored with zero voter identifiers, preserving constitutional ballot secrecy while enforcing strict one-token-one-vote rules.
+- **Dual-Mode Persistence:** Implemented local zero-config persistence using SQLite for rapid local development, alongside schema support for PostgreSQL and connection pooling.
+- **Event-Driven Telemetry:** Designed server-sent events (SSE) and RESTful API endpoints for election authorities to monitor voter turnout and verify audit chain integrity.
+
+### What I Learned
+- **Cryptographic Verification vs. Trust:** How binary hash trees and inclusion proofs can establish end-to-end auditability without central database trust.
+- **Race Condition Prevention:** The critical importance of atomic token burning (using Redis atomic scripts or transactional database locks) to prevent concurrent double-vote submission.
+- **Graceful Degradation:** Structuring distributed service fallbacks so core ingestion and local cryptographic validation remain operational when optional services (like Redis or external databases) are unavailable.
+
+---
+
+## 🌐 Application Architecture & Design
+
+| Component | Target URL | Responsibilities |
 | :--- | :--- | :--- |
-| **Citizen Voter Web Portal** | [http://localhost:3000](http://localhost:3000/) | Secure citizen voter portal with biometric verification, OTP authentication, anonymous encrypted ballot casting, and Merkle inclusion proof receipt checking |
-| **Election Commission Admin Console** | [http://localhost:3004](http://localhost:3004/) | Mission-control administrative console for election officials: real-time turnout count, voter roll enrollment, candidate management, key ceremony approvals, and audit ledger inspection |
+| **Citizen Voter Web App** | `http://localhost:3000` | Voter authentication, ballot casting, and Merkle receipt proof verification |
+| **Election Admin Console** | `http://localhost:3004` | Turnout tracking, candidate roll management, and audit ledger inspection |
+
+### Architectural Highlights
+- **Designed for High-Throughput Ingestion:** Architected around Redis Streams (`XADD` / `XREADGROUP`) to decouple peak ballot surges from relational database write bottlenecks.
+- **Cryptographic Inclusion Proofs:** Implements domain-separated SHA-256 hashing (`0x00` leaf prefix, `0x01` node prefix) to guard against second-preimage attacks.
+- **Container-Ready Architecture:** Includes multi-stage Docker builds, Docker Compose definitions, and Kubernetes deployment manifests with horizontal pod autoscaler (HPA) specifications for distributed deployment.
 
 ---
 
-## ✨ Production Architectural Highlights
+## 🛠️ Tech Stack
 
-- **⚡ High-Throughput Asynchronous Vote Ingestion:** Powered by **Redis Streams** (`XADD` / `XREADGROUP`), decoupling incoming ballot surges ($1,000+\text{ TPS}$) from database writes with atomic token burn.
-- **🛡️ Cryptographic Merkle Tree Audit Ledger:** Implements RFC 6962 domain-separated hashing and compact $O(\log N)$ inclusion proofs, allowing voters to mathematically verify their ballot is sealed in the ballot box without scanning millions of records.
-- **🔒 Zero-Knowledge Ballot Box:** Voter identities are strictly decoupled from ballots. AES-256 encrypted ballots contain zero voter identifiers, enforcing strict ballot secrecy.
-- **🗄️ Relational Persistence & Connection Pooling:** Dual-mode persistence supporting **PostgreSQL 16** via **Drizzle ORM** with PgBouncer connection pooling and fallback local SQLite.
-- **🐳 Enterprise Containerization & Orchestration:** Multi-stage minimal Docker builds, full stack Docker Compose (PostgreSQL, Redis, API, Worker), and production Kubernetes manifests with Horizontal Pod Autoscaling (HPA) and PodDisruptionBudgets.
-- **🚦 Distributed Rate Limiting & Health Checks:** Redis-backed sliding-window rate limiters protecting authentication and voting endpoints, with `/api/health` readiness probes.
-
----
-
-## 🛠️ Production Tech Stack
-
-- **Monorepo Management:** Turborepo & pnpm Workspaces
-- **Frontend Applications (`apps/`):** Web Voter Portal, Admin Dashboard, Mobile App
-- **Backend Microservices (`services/`):** Auth, Voting & Ballot Ingestion, Admin, Face Verification
-- **Shared Libraries (`packages/`):** Type-Safe SDKs, Domain Types, Merkle Audit Client
-- **Primary Databases (`db/`):** Dual PostgreSQL 16 (Identity Database & Ballot Box Ledger)
-- **Message Broker & Cache:** Redis 7 (Redis Streams + Atomic Lua Scripts)
-- **Cryptographic Verification:** SHA-256 Merkle Trees (RFC 6962) & AES-256-CBC Ballot Sealing
-- **Infrastructure & Orchestration (`infra/`):** Docker Compose, Nginx Reverse Proxy, Kubernetes (HPA), Prometheus & Grafana
-- **Testing (`tests/`):** E2E (Playwright), Load Testing (k6), Security & Tamper Detection
-- **CI/CD:** GitHub Actions Matrix Pipelines
+- **Runtime & Backend:** Node.js (v20+), Express.js
+- **Persistence:** SQLite (default local development), PostgreSQL (via Drizzle ORM / pg)
+- **Message Broker & Queue:** Redis Streams (optional, with in-memory fallback)
+- **Cryptography:** Node.js `crypto` (SHA-256 Merkle Tree, AES-256-CBC ballot sealing)
+- **Testing:** Native Node.js test scripts (`assert`, HTTP integration tests)
+- **Infrastructure:** Docker Compose, Kubernetes manifests, Nginx reverse proxy
 
 ---
 
-## 📁 Monorepo Architecture & Directory Layout
+## 📁 Repository Layout
 
 ```
-vote-wallet/
-├── apps/                  FRONTEND (web voter app, admin dashboard, mobile)
-│   ├── web/               # Citizen voting web application
-│   ├── admin/             # Electoral commission administrative dashboard
-│   └── mobile/            # Mobile voter companion app
-├── services/              BACKEND (auth, voting, admin, face)
-│   ├── auth/              # Citizen identity, WebAuthn, biometric authentication
-│   ├── voting/            # Asynchronous ballot ingestion, zero-knowledge ballot box, Merkle tree
-│   ├── admin/             # Election configuration, candidate management, roll verification
-│   └── face/              # Facial verification & liveness detection service
-├── packages/              Shared code (types, API client, audit client, configs)
-│   ├── types/             # Shared TypeScript domain models & DTOs
-│   ├── api-client/        # Type-safe API SDK for apps
-│   ├── audit-client/      # Merkle inclusion proof & cryptographic audit verification client
-│   └── config/            # Shared ESLint, Prettier, and TypeScript configurations
-├── db/                    SQL migrations for the two databases
-│   ├── migrations/        # Dual database SQL migrations (Identity DB & Ballot DB)
-│   └── seeds/             # Seed fixtures for local development
-├── infra/                 Docker, Nginx, Kubernetes, monitoring
-│   ├── docker/            # Multi-stage Dockerfiles and container configurations
-│   ├── nginx/             # Gateway routing and reverse proxy
-│   ├── k8s/               # Production Kubernetes manifests, HPA, and ingress
-│   └── monitoring/        # Prometheus metrics and Grafana dashboards
-├── tests/                 End-to-end, load and security tests
-│   ├── e2e/               # Playwright cross-browser voting flow tests
-│   ├── load/              # k6 spike and high-concurrency ballot ingestion tests
-│   └── security/          # Ballot integrity, replay prevention, and penetration tests
-├── docs/                  Architecture, API spec, runbooks
-│   ├── architecture/      # System architecture and cryptographic Merkle specifications
-│   ├── api/               # OpenAPI / Swagger specifications for all services
-│   └── runbooks/          # Election day operations, disaster recovery, and scaling runbooks
-├── .github/workflows/     CI/CD
-│   └── ci.yml             # Monorepo build, lint, test, and container scanning pipeline
-├── docker-compose.yml     Local development
-├── package.json           Workspace root (pnpm workspaces)
-├── pnpm-workspace.yaml    # pnpm workspace definition
-├── turbo.json             # Turborepo task pipeline & caching definition
-├── .env.example           # Root environment configuration template
-└── README.md              # Project documentation
+vote-genz-wallet/
+├── apps/
+│   ├── web/               # Express-based voter web portal & core API service
+│   ├── admin/             # Electoral administration console
+│   └── mobile/            # Mobile companion interface
+├── services/
+│   ├── redis.js           # Redis Streams client with in-memory fallback
+│   ├── merkle.js          # Merkle tree implementation & inclusion proof builder
+│   └── sqlite-adapter.js  # Database persistence adapter
+├── packages/              # Shared TypeScript definitions and client utilities
+├── db/                    # SQL migrations and schema fixtures
+├── infra/                 # Docker Compose, Nginx, and Kubernetes manifests
+├── test/
+│   ├── concurrency-and-merkle.test.js  # Cryptographic throughput & Merkle tests
+│   └── e2e-voting-lifecycle.test.js    # End-to-end HTTP integration test
+├── docker-compose.yml
+├── package.json
+└── README.md
 ```
 
 ---
 
 ## 🚀 Quick Start Guide
 
-### 1. Workspace Prerequisites
-Ensure [Node.js 20+](https://nodejs.org/) and [pnpm](https://pnpm.io/) are installed:
+### Prerequisites
+- [Node.js](https://nodejs.org/) v20 or higher
+- (Optional) [Docker](https://www.docker.com/) and Docker Compose (required for Redis and PostgreSQL container orchestration)
+
+### 1. Installation
+
+Clone the repository and install root dependencies:
 ```bash
-corepack enable
-corepack prepare pnpm@latest --activate
+git clone https://github.com/Anilkumar4516/vote-genz-wallet.git
+cd vote-genz-wallet
+npm install
 ```
 
-### 2. Install Workspace Dependencies
-Install dependencies across all workspaces (`apps/*`, `services/*`, `packages/*`):
+### 2. Run Cryptographic & Merkle Tests (Fast & Self-Contained)
+
+Run the standalone cryptographic engine test suite:
 ```bash
-pnpm install
+node test/concurrency-and-merkle.test.js
 ```
+This test runs in-memory with zero external dependencies and validates:
+- RFC 6962 leaf hashing and Merkle tree root construction.
+- Generation and mathematical verification of $O(\log N)$ inclusion proofs across 1,024 and 10,000 ballot batches.
+- Immediate rejection of tampered proofs.
 
-### 3. Run Development Servers & Access Portals
-Launch applications and services locally:
+### 3. Run the Web Voter Portal Locally
+
+Start the web application with SQLite persistence:
 ```bash
-# Option A: Launch Web Voter App & Backend API (Port 3000)
-npm run dev
-
-# Option B: Launch Admin Dashboard (Port 3004)
-npm run dev:admin
-
-# Option C: Launch everything with Turborepo
-pnpm run dev
+node apps/web/index.js
 ```
+Once started, access the voter portal at **`http://localhost:3000`**.
 
-Once running, access the portals in your browser:
-- 🗳️ **Citizen Voter Web Portal:** [http://localhost:3000](http://localhost:3000/)
-- 🏛️ **Election Commission Admin Console:** [http://localhost:3004](http://localhost:3004/)
+> **⚠️ Local Startup Note:** When running `node apps/web/index.js` without a local Redis server running on port `6379`, the service will attempt connection retries for ~15 seconds before successfully falling back to the built-in in-memory queue. Once the console logs `Operating in fallback mode`, the HTTP server is ready.
 
-### 4. Full Production Stack with Docker Compose
-To launch the complete enterprise architecture (PostgreSQL dual databases, Redis 7, Nginx Gateway, and Microservices):
+### 4. Running the Full Stack with Docker Compose
+
+To run the full stack including Redis 7 and PostgreSQL containers:
 ```bash
-# Start all containers in background
 docker compose up --build -d
-
-# View real-time logs across services
-docker compose logs -f
-
-# Stop containers
+```
+To stop the containers:
+```bash
 docker compose down
 ```
 
-### 5. Run Test Suite Across Workspaces
-Execute unit, integration, and cryptographic Merkle verification tests across all packages:
+### 5. Running the End-to-End Test
+
 ```bash
-pnpm test
+npm test
 ```
+
+> **⚠️ Test Suite Flag / Caveat:**
+> - `test/concurrency-and-merkle.test.js` passes 100% independently.
+> - `test/e2e-voting-lifecycle.test.js` launches a child process to test the HTTP API. If Redis is not running locally, the 15-second Redis retry loop exceeds the test runner's initial 4-second health-check wait, resulting in an `ERR_ASSERTION: Server did not come online`. For the E2E test to pass cleanly, either start Redis locally or adjust the test timeout to allow the fallback to engage.
 
 ---
 
-## 🔍 Cryptographic Verification & Service Endpoints
+## 📡 Key API Endpoints
 
-- **Gateway Health Probe:** `GET /api/health`
-- **Prometheus Metrics:** `GET /metrics`
-- **Real-Time Live SSE Stream:** `GET /api/election/stream` (0ms push for `BALLOT_SEALED`, `MERKLE_ROOT_SEALED`, `LIVE_STATS_REFRESH`)
-- **Duplex WebSocket Stream:** `WS /ws/election` (Real-time live telemetry stream)
-- **Real-Time Turnout & Leaderboard:** `GET /api/election/live-stats`
-- **Auth Service:** `POST /api/auth/login`, `POST /api/auth/verify-otp`, `GET /api/auth/webauthn-challenge`
-- **Voting Ballot Ingestion:** `POST /api/vote/cast` (Redis Streams `XADD` with atomic token burn)
-- **Merkle Inclusion Proof:** `GET /api/vote/merkle-proof/:receiptHash` ($O(\log N)$ verification)
-- **Public Receipt Verification:** `GET /api/vote/receipt/:code` (Zero-knowledge confirmation)
-- **Audit Hash Chain Integrity:** `GET /api/audit/verify-chain` (Full SHA-256 chain verification)
-- **Biometric Challenge Audit:** `GET /api/audit/biometrics` (Biometric challenge logs)
-- **Admin Election Controls:** `POST /api/admin/elections/:id/close`, `POST /api/admin/elections/:id/reopen`, `POST /api/admin/elections/:id/tally`, `POST /api/admin/reset-election`
+- `GET /api/health` — Service readiness probe
+- `POST /api/auth/login` — Voter authentication & OTP dispatch
+- `POST /api/auth/verify-otp` — Session token exchange
+- `POST /api/vote/cast` — Decoupled ballot ingestion & token burn
+- `GET /api/vote/merkle-proof/:receiptHash` — Inclusion proof retrieval for ballot verification
+- `GET /api/vote/receipt/:code` — Zero-knowledge receipt status check
+- `GET /api/election/live-stats` — Aggregated turnout telemetry
+- `POST /api/admin/reset-election` — Test fixture state reset
 
+---
+
+## 📄 License
+
+This project is licensed under the ISC License.
